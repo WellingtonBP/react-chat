@@ -1,0 +1,16 @@
+{
+  "name": "react-chat-server",
+  "version": "1.0.0",
+  "description": "react-chat backend application",
+  "author": "Wellington Pacheco",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "sucrase ./src -d ./dist --transforms typescript,imports",
+    "dev": "nodemon ./src/server.ts"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.9",
+    "sucrase": "^3.20.0"
+  }
+}
