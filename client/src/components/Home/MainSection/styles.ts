@@ -107,7 +107,6 @@ const NavItem = styled.li`
 `
 
 const MainSectionContent = styled.div`
-  border-bottom-left-radius: 0.5rem;
   background-color: var(--dark);
   height: calc(100% - 140px);
   padding: 1rem 1.5rem;
@@ -121,6 +120,7 @@ const MainSectionContent = styled.div`
 
   @media (min-width: 768px) {
     height: calc(100% - 70px);
+    border-bottom-left-radius: 0.5rem;
     &::-webkit-scrollbar {
       width: 1rem;
     }
