@@ -1,6 +1,8 @@
 import { Schema, model, Types, Document, ObjectId } from 'mongoose'
 
-interface IUser extends Document {
+import { IChat } from './Chat'
+
+export interface IUser extends Document {
   name: string
   email: string
   password: string
@@ -9,11 +11,11 @@ interface IUser extends Document {
   requestsReceived: Array<ObjectId>
   requestsSent: Array<ObjectId>
   friends: Array<{
-    friendId: ObjectId
+    friendId: ObjectId | IUser
     unreadMessages: number
     isRemoved: boolean
     cleanedAt?: number
-    chatId: ObjectId
+    chatId: ObjectId | IChat
   }>
 }
 
@@ -53,7 +55,7 @@ const userSchema = new Schema<IUser>({
   friends: [
     {
       friendId: {
-        type: String,
+        type: Types.ObjectId,
         ref: 'User',
         required: true
       },

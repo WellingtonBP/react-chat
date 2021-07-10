@@ -1,6 +1,6 @@
 import { Schema, model, Types, Document, ObjectId } from 'mongoose'
 
-interface IChat extends Document {
+export interface IChat extends Document {
   messages: Array<{
     content: string
     sender: ObjectId
