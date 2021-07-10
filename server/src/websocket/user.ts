@@ -18,8 +18,8 @@ io.use(async (socket, next) => {
     const usersService = new UsersService()
     await usersService.changeStatusAndSocketId(user, true, socket.id)
 
-    const populatedUser = await usersService.populateUser(user)
-    populatedUser.friends
+    const userFriends = (await usersService.populateUser(user)).friends
+    userFriends
       .filter(({ friendId }) => (<IUser>friendId).isOnline)
       .forEach(({ friendId }) => {
         const socketId = (<IUser>friendId).socketId
@@ -76,5 +76,18 @@ io.on('connect', socket => {
         })
       }
     }
+  })
+
+  socket.on('disconnect', async () => {
+    const user = await User.findOne({ socketId: socket.id })
+    await usersService.changeStatusAndSocketId(user, false)
+
+    const userFriends = (await usersService.populateUser(user)).friends
+    userFriends
+      .filter(({ friendId }) => (<IUser>friendId).isOnline)
+      .forEach(({ friendId }) => {
+        const socketId = (<IUser>friendId).socketId
+        io.to(socketId).emit('friend_disconnect', { id: user._id })
+      })
   })
 })

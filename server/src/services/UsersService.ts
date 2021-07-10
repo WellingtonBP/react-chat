@@ -14,7 +14,7 @@ class UsersService {
   async changeStatusAndSocketId(
     user: IUser,
     isOnline: boolean,
-    socketId: string | null
+    socketId?: string
   ): Promise<void> {
     user.isOnline = isOnline
     user.socketId = socketId || ''
