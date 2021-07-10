@@ -51,8 +51,8 @@ io.on('connect', socket => {
     }
   })
 
-  socket.on('accept_friend_request', async ({ id }) => {
-    if (!id) return
+  socket.on('accept_friend_request', async ({ id }, callback) => {
+    if (!id || !callback) return
 
     const user = await User.findOne({ socketId: socket.id })
     const acceptedFriend = await User.findById(id)
@@ -66,14 +66,24 @@ io.on('connect', socket => {
       io.to(acceptedFriend.socketId).emit('accepted_friend_request', {
         ...acceptFriendResponse,
         friendId: {
-          _id: acceptedFriend._id,
-          name: acceptedFriend.name,
-          avatar: acceptedFriend.avatar,
-          isOnline: acceptedFriend.isOnline,
-          socketId: acceptedFriend.socketId
+          _id: user._id,
+          name: user.name,
+          avatar: user.avatar,
+          isOnline: user.isOnline,
+          socketId: user.socketId
         }
       })
     }
+    callback({
+      ...acceptFriendResponse,
+      friendId: {
+        _id: acceptedFriend._id,
+        name: acceptedFriend.name,
+        avatar: acceptedFriend.avatar,
+        isOnline: acceptedFriend.isOnline,
+        socketId: acceptedFriend.socketId
+      }
+    })
   })
 
   socket.on('send_message', async ({ content, senderAt, id, chatId }) => {
