@@ -3,6 +3,7 @@ import { Schema, model, Types, Document, ObjectId } from 'mongoose'
 import { IChat } from './Chat'
 
 export interface IUser extends Document {
+  socketId?: string
   name: string
   email: string
   password: string
@@ -20,6 +21,7 @@ export interface IUser extends Document {
 }
 
 const userSchema = new Schema<IUser>({
+  socketId: String,
   name: {
     type: String,
     required: true

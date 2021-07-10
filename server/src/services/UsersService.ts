@@ -11,10 +11,20 @@ class UsersService {
     return user
   }
 
+  async changeStatusAndSocketId(
+    user: IUser,
+    isOnline: boolean,
+    socketId: string | null
+  ): Promise<void> {
+    user.isOnline = isOnline
+    user.socketId = socketId || ''
+    await user.save()
+  }
+
   async populateUser(user: IUser): Promise<IUser> {
     if (user.friends.length > 0) {
       const populatedUser = await user
-        .populate('friends.friendId', 'name avatar isOnline')
+        .populate('friends.friendId', 'name avatar isOnline socketId')
         .populate('friends.chatId', '-_id')
         .execPopulate()
 

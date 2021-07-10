@@ -3,12 +3,32 @@ import { verify, JwtPayload } from 'jsonwebtoken'
 
 import ICustomError from '../utils/ICustomError'
 
+interface IDecodedToken extends JwtPayload {
+  id: string
+}
+
 export interface IAuthenticatedReq extends Request {
   userId?: string
 }
 
-interface IDecodedToken extends JwtPayload {
-  id: string
+export function checkIfTokenExists(token: string): never | void {
+  if (!token) {
+    const err: ICustomError = new Error()
+    err.originalMessage = 'No token found'
+    err.statusCode = 401
+    throw err
+  }
+}
+
+export function decodeTokenAndCheckValidity(token: string): never | string {
+  try {
+    const decodedToken = verify(token, process.env.JWT_SECRET) as IDecodedToken
+    return decodedToken.id
+  } catch (err) {
+    err.originalMessage = 'Invalid token'
+    err.statusCode = 401
+    throw err
+  }
 }
 
 function isAuth(
@@ -26,22 +46,9 @@ function isAuth(
     }
 
     const [, token] = tokenHeader.split(' ')
-    if (!token) {
-      const err: ICustomError = new Error()
-      err.originalMessage = 'Invalid authorization header'
-      err.statusCode = 401
-      throw err
-    }
+    checkIfTokenExists(token)
 
-    const decodedToken = verify(token, process.env.JWT_SECRET) as IDecodedToken
-    if (!decodedToken) {
-      const err: ICustomError = new Error()
-      err.originalMessage = 'Invalid token'
-      err.statusCode = 401
-      throw err
-    }
-
-    req.userId = decodedToken.id
+    req.userId = decodeTokenAndCheckValidity(token)
     next()
   } catch (err) {
     next(err)

@@ -23,8 +23,7 @@ class FriendsService {
       .filter(
         user =>
           currentUser.friends.findIndex(
-            currentUserFriend =>
-              currentUserFriend.friendId.toString() === user._id.toString()
+            ({ friendId }) => friendId.toString() === user._id.toString()
           ) === -1 &&
           !currentUser.requestsSent.includes(user._id) &&
           !currentUser.requestsReceived.includes(user._id)
@@ -35,11 +34,10 @@ class FriendsService {
           name: user.name,
           avatar: user.avatar,
           mutuals: user.friends.filter(
-            friend =>
+            ({ friendId }) =>
               currentUser.friends.findIndex(
-                currentUserfriend =>
-                  currentUserfriend.friendId.toString() ===
-                  friend.friendId.toString()
+                ({ friendId: currentUserFriendId }) =>
+                  currentUserFriendId.toString() === friendId.toString()
               ) !== -1
           ).length
         }
