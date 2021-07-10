@@ -51,4 +51,30 @@ io.on('connect', socket => {
       }
     }
   })
+
+  socket.on('accept_friend_request', async ({ id }) => {
+    if (!id) return
+
+    const currentUser = await User.findOne({ socketId: socket.id })
+    const user = await User.findById(id)
+
+    if (user && currentUser) {
+      const acceptFriendResponse = await friendsService.accept(
+        currentUser,
+        user
+      )
+      if (user.isOnline) {
+        io.to(user.socketId).emit('accepted_friend_request', {
+          ...acceptFriendResponse,
+          friendId: {
+            _id: user._id,
+            name: user.name,
+            avatar: user.avatar,
+            isOnline: user.isOnline,
+            socketId: user.socketId
+          }
+        })
+      }
+    }
+  })
 })

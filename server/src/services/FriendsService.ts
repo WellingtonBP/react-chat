@@ -7,6 +7,12 @@ type FindOrRequestResponseBaseType = {
   mutuals: number
 }
 
+type AcceptResponse = {
+  unreadMessages: number
+  isRemoved: boolean
+  chatId: string
+}
+
 function mutualFriendsCounter(user: IUser, currentUser: IUser): number {
   return user.friends.filter(
     ({ friendId }) =>
@@ -69,38 +75,36 @@ class FriendsService {
     return requestReceived
   }
 
-  async accept(currentUser: IUser, id: string): Promise<void> {
-    const user = await User.findById(id)
+  async accept(currentUser: IUser, user): Promise<AcceptResponse> {
+    const chat = new Chat()
 
-    if (user.requestsSent.includes(currentUser._id)) {
-      const chat = new Chat()
-
-      const friendCfg = {
-        chatId: chat._id,
-        isRemoved: false,
-        unreadMessages: 0
-      }
-
-      user.requestsSent = user.requestsSent.filter(
-        request => request.toString() !== currentUser._id.toString()
-      )
-      user.friends.push({
-        ...friendCfg,
-        friendId: currentUser._id
-      })
-
-      currentUser.requestsReceived = currentUser.requestsReceived.filter(
-        request => request.toString() !== user._id.toString()
-      )
-      currentUser.friends.push({
-        ...friendCfg,
-        friendId: user._id
-      })
-
-      await chat.save()
-      await user.save()
-      await currentUser.save()
+    const friendCfg = {
+      chatId: chat._id,
+      isRemoved: false,
+      unreadMessages: 0
     }
+
+    user.requestsSent = user.requestsSent.filter(
+      request => request.toString() !== currentUser._id.toString()
+    )
+    user.friends.push({
+      ...friendCfg,
+      friendId: currentUser._id
+    })
+
+    currentUser.requestsReceived = currentUser.requestsReceived.filter(
+      request => request.userId.toString() !== user._id.toString()
+    )
+    currentUser.friends.push({
+      ...friendCfg,
+      friendId: user._id
+    })
+
+    await chat.save()
+    await user.save()
+    await currentUser.save()
+
+    return friendCfg
   }
 }
 
