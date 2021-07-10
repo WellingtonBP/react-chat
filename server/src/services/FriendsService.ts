@@ -1,4 +1,4 @@
-import Chat from '../models/Chat'
+import Chat, { Message } from '../models/Chat'
 import User, { IUser } from '../models/User'
 
 type FindOrRequestResponseBaseType = {
@@ -107,6 +107,13 @@ class FriendsService {
     await user.save()
 
     return friendCfg
+  }
+
+  async sendMessage(chatId: string, message: Message): Promise<void> {
+    const chat = await Chat.findById(chatId)
+
+    chat.messages.push(message)
+    await chat.save()
   }
 }
 

@@ -76,6 +76,24 @@ io.on('connect', socket => {
     }
   })
 
+  socket.on('send_message', async ({ content, senderAt, id, chatId }) => {
+    if (!content || !senderAt || !id || !chatId) return
+
+    const fromUser = await User.findOne({ socketId: socket.id })
+    const toUser = await User.findById(id)
+    if (!toUser || !fromUser) return
+
+    const message = {
+      content,
+      senderAt,
+      sender: fromUser._id
+    }
+    await friendsService.sendMessage(chatId, message)
+    if (toUser.isOnline) {
+      io.to(toUser.socketId).emit('new_message', message)
+    }
+  })
+
   socket.on('disconnect', async () => {
     const user = await User.findOne({ socketId: socket.id })
     await usersService.changeStatusAndSocketId(user, false)

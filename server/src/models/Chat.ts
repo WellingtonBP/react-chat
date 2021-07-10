@@ -1,11 +1,13 @@
 import { Schema, model, Types, Document, ObjectId } from 'mongoose'
 
+export type Message = {
+  content: string
+  sender: ObjectId
+  senderAt: number
+}
+
 export interface IChat extends Document {
-  messages: Array<{
-    content: string
-    sender: ObjectId
-    senderAt: number
-  }>
+  messages: Array<Message>
 }
 
 const chatSchema = new Schema({
