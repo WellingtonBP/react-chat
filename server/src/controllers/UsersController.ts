@@ -27,7 +27,8 @@ class UsersController {
         friends,
         requestsReceived,
         requestsSent,
-        token
+        token,
+        expiresIn: Date.now() + 3600000
       })
     } catch (err) {
       next(err)
@@ -68,7 +69,8 @@ class UsersController {
         friends,
         requestsSent,
         requestsReceived,
-        token
+        token,
+        expiresIn: Date.now() + 3600000
       })
     } catch (err) {
       next(err)
