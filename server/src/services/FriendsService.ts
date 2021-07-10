@@ -47,6 +47,51 @@ class FriendsService {
 
     return parsedUsers
   }
+
+  async request(user: IUser, id: string): Promise<void> {
+    const currentUser = await User.findById(id)
+
+    if (!user.requestsReceived.includes(currentUser._id)) {
+      user.requestsReceived.push(currentUser._id)
+      currentUser.requestsSent.push(user._id)
+      await user.save()
+      await currentUser.save()
+    }
+  }
+
+  async accept(user: IUser, id: string): Promise<void> {
+    const currentUser = await User.findById(id)
+
+    if (user.requestsSent.includes(currentUser._id)) {
+      const chat = new Chat()
+
+      const friendCfg = {
+        chatId: chat._id,
+        isRemoved: false,
+        unreadMessages: 0
+      }
+
+      user.requestsSent = user.requestsSent.filter(
+        request => request.toString() !== currentUser._id.toString()
+      )
+      user.friends.push({
+        ...friendCfg,
+        friendId: currentUser._id
+      })
+
+      currentUser.requestsReceived = currentUser.requestsReceived.filter(
+        request => request.toString() !== user._id.toString()
+      )
+      currentUser.friends.push({
+        ...friendCfg,
+        friendId: user._id
+      })
+
+      await chat.save()
+      await user.save()
+      await currentUser.save()
+    }
+  }
 }
 
 export default FriendsService
