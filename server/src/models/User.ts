@@ -9,7 +9,12 @@ export interface IUser extends Document {
   password: string
   avatar?: string
   isOnline: boolean
-  requestsReceived: Array<ObjectId>
+  requestsReceived: Array<{
+    userId: ObjectId
+    name: string
+    avatar?: string
+    mutuals: number
+  }>
   requestsSent: Array<ObjectId>
   friends: Array<{
     friendId: ObjectId | IUser
@@ -42,9 +47,20 @@ const userSchema = new Schema<IUser>({
   },
   requestsReceived: [
     {
-      type: Types.ObjectId,
-      ref: 'User',
-      required: true
+      userId: {
+        type: Types.ObjectId,
+        required: true
+      },
+      name: {
+        type: String,
+        required: true
+      },
+      avatar: String,
+      mutuals: {
+        type: Number,
+        required: true,
+        default: 0
+      }
     }
   ],
   requestsSent: [

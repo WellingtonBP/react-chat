@@ -2,6 +2,7 @@ import { io } from '../app'
 
 import User, { IUser } from '../models/User'
 import UsersService from '../services/UsersService'
+import FriendsService from '../services/FriendsService'
 import {
   checkIfTokenExists,
   decodeTokenAndCheckValidity
@@ -31,4 +32,23 @@ io.use(async (socket, next) => {
       err.originalMessage || 'Something went wrong while authenticate socket'
     )
   }
+})
+
+io.on('connect', socket => {
+  const friendsService = new FriendsService()
+  const usersService = new UsersService()
+
+  socket.on('send_friend_request', async ({ id }) => {
+    if (!id) return
+
+    const currentUser = await User.findOne({ socketId: socket.id })
+    const user = await User.findById(id)
+
+    if (user && currentUser) {
+      const request = await friendsService.request(currentUser, user)
+      if (user.isOnline) {
+        io.to(user.socketId).emit('new_friend_request', request)
+      }
+    }
+  })
 })

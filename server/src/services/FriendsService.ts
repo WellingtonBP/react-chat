@@ -1,15 +1,27 @@
 import Chat from '../models/Chat'
 import User, { IUser } from '../models/User'
 
-type FindResponse = Array<{
-  id: string
+type FindOrRequestResponseBaseType = {
   name: string
   avatar?: string
   mutuals: number
-}>
+}
+
+function mutualFriendsCounter(user: IUser, currentUser: IUser): number {
+  return user.friends.filter(
+    ({ friendId }) =>
+      currentUser.friends.findIndex(
+        ({ friendId: currentUserFriendId }) =>
+          currentUserFriendId.toString() === friendId.toString()
+      ) !== -1
+  ).length
+}
 
 class FriendsService {
-  async find(name: string, id: string): Promise<FindResponse> {
+  async find(
+    name: string,
+    id: string
+  ): Promise<(FindOrRequestResponseBaseType & { id: string })[]> {
     const users = await User.find({
       name: { $regex: name, $options: 'gi' }
     }).select('name avatar friends')
@@ -18,7 +30,6 @@ class FriendsService {
       'friends requestsSent requestsReceived -_id'
     )
 
-    // remove users who friendship was requested or is friend already and formating response
     const parsedUsers = users
       .filter(
         user =>
@@ -33,32 +44,33 @@ class FriendsService {
           id: user._id,
           name: user.name,
           avatar: user.avatar,
-          mutuals: user.friends.filter(
-            ({ friendId }) =>
-              currentUser.friends.findIndex(
-                ({ friendId: currentUserFriendId }) =>
-                  currentUserFriendId.toString() === friendId.toString()
-              ) !== -1
-          ).length
+          mutuals: mutualFriendsCounter(user, currentUser)
         }
       })
 
     return parsedUsers
   }
 
-  async request(user: IUser, id: string): Promise<void> {
-    const currentUser = await User.findById(id)
-
-    if (!user.requestsReceived.includes(currentUser._id)) {
-      user.requestsReceived.push(currentUser._id)
-      currentUser.requestsSent.push(user._id)
-      await user.save()
-      await currentUser.save()
+  async request(
+    currentUser: IUser,
+    user: IUser
+  ): Promise<FindOrRequestResponseBaseType & { userId: string }> {
+    const requestReceived = {
+      userId: currentUser._id,
+      name: currentUser.name,
+      avatar: currentUser.avatar,
+      mutuals: mutualFriendsCounter(user, currentUser)
     }
+    user.requestsReceived.push(requestReceived)
+    currentUser.requestsSent.push(user._id)
+    await user.save()
+    await currentUser.save()
+
+    return requestReceived
   }
 
-  async accept(user: IUser, id: string): Promise<void> {
-    const currentUser = await User.findById(id)
+  async accept(currentUser: IUser, id: string): Promise<void> {
+    const user = await User.findById(id)
 
     if (user.requestsSent.includes(currentUser._id)) {
       const chat = new Chat()
