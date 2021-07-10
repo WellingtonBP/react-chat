@@ -30,7 +30,7 @@ route.get(
   isAuth,
   findFriendsValidators,
   validationCheckResult,
-  usersController.find
+  usersController.findNewFriend
 )
 
 export default route

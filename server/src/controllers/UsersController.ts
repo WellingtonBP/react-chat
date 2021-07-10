@@ -75,7 +75,7 @@ class UsersController {
     }
   }
 
-  async find(
+  async findNewFriend(
     req: IAuthenticatedReq,
     res: Response,
     next: NextFunction
