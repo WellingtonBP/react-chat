@@ -41,40 +41,38 @@ io.on('connect', socket => {
   socket.on('send_friend_request', async ({ id }) => {
     if (!id) return
 
-    const currentUser = await User.findOne({ socketId: socket.id })
-    const user = await User.findById(id)
+    const fromUser = await User.findOne({ socketId: socket.id })
+    const toUser = await User.findById(id)
+    if (!toUser || !fromUser) return
 
-    if (user && currentUser) {
-      const request = await friendsService.request(currentUser, user)
-      if (user.isOnline) {
-        io.to(user.socketId).emit('new_friend_request', request)
-      }
+    const request = await friendsService.request(fromUser, toUser)
+    if (toUser.isOnline) {
+      io.to(toUser.socketId).emit('new_friend_request', request)
     }
   })
 
   socket.on('accept_friend_request', async ({ id }) => {
     if (!id) return
 
-    const currentUser = await User.findOne({ socketId: socket.id })
-    const user = await User.findById(id)
+    const user = await User.findOne({ socketId: socket.id })
+    const acceptedFriend = await User.findById(id)
+    if (!user || !acceptedFriend) return
 
-    if (user && currentUser) {
-      const acceptFriendResponse = await friendsService.accept(
-        currentUser,
-        user
-      )
-      if (user.isOnline) {
-        io.to(user.socketId).emit('accepted_friend_request', {
-          ...acceptFriendResponse,
-          friendId: {
-            _id: user._id,
-            name: user.name,
-            avatar: user.avatar,
-            isOnline: user.isOnline,
-            socketId: user.socketId
-          }
-        })
-      }
+    const acceptFriendResponse = await friendsService.accept(
+      user,
+      acceptedFriend
+    )
+    if (acceptedFriend.isOnline) {
+      io.to(acceptedFriend.socketId).emit('accepted_friend_request', {
+        ...acceptFriendResponse,
+        friendId: {
+          _id: acceptedFriend._id,
+          name: acceptedFriend.name,
+          avatar: acceptedFriend.avatar,
+          isOnline: acceptedFriend.isOnline,
+          socketId: acceptedFriend.socketId
+        }
+      })
     }
   })
 

@@ -13,12 +13,12 @@ type AcceptResponse = {
   chatId: string
 }
 
-function mutualFriendsCounter(user: IUser, currentUser: IUser): number {
-  return user.friends.filter(
+function mutualFriendsCounter(user1: IUser, user2: IUser): number {
+  return user1.friends.filter(
     ({ friendId }) =>
-      currentUser.friends.findIndex(
-        ({ friendId: currentUserFriendId }) =>
-          currentUserFriendId.toString() === friendId.toString()
+      user2.friends.findIndex(
+        ({ friendId: User2FriendId }) =>
+          User2FriendId.toString() === friendId.toString()
       ) !== -1
   ).length
 }
@@ -28,54 +28,55 @@ class FriendsService {
     name: string,
     id: string
   ): Promise<(FindOrRequestResponseBaseType & { id: string })[]> {
-    const users = await User.find({
+    const foundUsers = await User.find({
       name: { $regex: name, $options: 'gi' }
     }).select('name avatar friends')
 
-    const currentUser = await User.findById(id).select(
+    const user = await User.findById(id).select(
       'friends requestsSent requestsReceived -_id'
     )
 
-    const parsedUsers = users
+    const parsedFoundUsers = foundUsers
       .filter(
-        user =>
-          currentUser.friends.findIndex(
-            ({ friendId }) => friendId.toString() === user._id.toString()
+        foundUser =>
+          foundUser.friends.findIndex(
+            ({ friendId }) => friendId.toString() === foundUser._id.toString()
           ) === -1 &&
-          !currentUser.requestsSent.includes(user._id) &&
-          !currentUser.requestsReceived.includes(user._id)
+          !foundUser.requestsSent.includes(foundUser._id) &&
+          !foundUser.requestsReceived.includes(foundUser._id)
       )
-      .map(user => {
+      .map(foundUser => {
         return {
-          id: user._id,
-          name: user.name,
-          avatar: user.avatar,
-          mutuals: mutualFriendsCounter(user, currentUser)
+          id: foundUser._id,
+          name: foundUser.name,
+          avatar: foundUser.avatar,
+          mutuals: mutualFriendsCounter(foundUser, user)
         }
       })
 
-    return parsedUsers
+    return parsedFoundUsers
   }
 
   async request(
-    currentUser: IUser,
-    user: IUser
+    fromUser: IUser,
+    toUser: IUser
   ): Promise<FindOrRequestResponseBaseType & { userId: string }> {
     const requestReceived = {
-      userId: currentUser._id,
-      name: currentUser.name,
-      avatar: currentUser.avatar,
-      mutuals: mutualFriendsCounter(user, currentUser)
+      userId: fromUser._id,
+      name: fromUser.name,
+      avatar: fromUser.avatar,
+      mutuals: mutualFriendsCounter(toUser, fromUser)
     }
-    user.requestsReceived.push(requestReceived)
-    currentUser.requestsSent.push(user._id)
-    await user.save()
-    await currentUser.save()
+
+    toUser.requestsReceived.push(requestReceived)
+    fromUser.requestsSent.push(toUser._id)
+    await toUser.save()
+    await fromUser.save()
 
     return requestReceived
   }
 
-  async accept(currentUser: IUser, user): Promise<AcceptResponse> {
+  async accept(user: IUser, acceptedUser: IUser): Promise<AcceptResponse> {
     const chat = new Chat()
 
     const friendCfg = {
@@ -84,25 +85,26 @@ class FriendsService {
       unreadMessages: 0
     }
 
-    user.requestsSent = user.requestsSent.filter(
-      request => request.toString() !== currentUser._id.toString()
+    acceptedUser.requestsSent = acceptedUser.requestsSent.filter(
+      friendRequest => friendRequest.toString() !== user._id.toString()
     )
-    user.friends.push({
-      ...friendCfg,
-      friendId: currentUser._id
-    })
-
-    currentUser.requestsReceived = currentUser.requestsReceived.filter(
-      request => request.userId.toString() !== user._id.toString()
-    )
-    currentUser.friends.push({
+    acceptedUser.friends.push({
       ...friendCfg,
       friendId: user._id
     })
 
+    user.requestsReceived = user.requestsReceived.filter(
+      friendRequest =>
+        friendRequest.userId.toString() !== acceptedUser._id.toString()
+    )
+    user.friends.push({
+      ...friendCfg,
+      friendId: acceptedUser._id
+    })
+
     await chat.save()
     await user.save()
-    await currentUser.save()
+    await user.save()
 
     return friendCfg
   }
