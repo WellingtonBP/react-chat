@@ -4,6 +4,8 @@ import { compare } from 'bcrypt'
 
 import User from '../models/User'
 import UsersService from '../services/UsersService'
+import FriendsService from '../services/FriendsService'
+import { IAuthenticatedReq } from '../middlewares/isAuth'
 import ICustomError from '../utils/ICustomError'
 
 class UsersController {
@@ -68,6 +70,24 @@ class UsersController {
         requestsReceived,
         token
       })
+    } catch (err) {
+      next(err)
+    }
+  }
+
+  async find(
+    req: IAuthenticatedReq,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { name } = req.query
+      const id = req.userId
+      const friendsService = new FriendsService()
+
+      const foundUsers = await friendsService.find(String(name), id)
+
+      res.status(200).json(foundUsers)
     } catch (err) {
       next(err)
     }
