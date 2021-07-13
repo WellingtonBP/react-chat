@@ -17,8 +17,8 @@ function mutualFriendsCounter(user1: IUser, user2: IUser): number {
   return user1.friends.filter(
     ({ friendId }) =>
       user2.friends.findIndex(
-        ({ friendId: User2FriendId }) =>
-          User2FriendId.toString() === friendId.toString()
+        ({ friendId: user2FriendId }) =>
+          user2FriendId.toString() === friendId.toString()
       ) !== -1
   ).length
 }
@@ -107,6 +107,29 @@ class FriendsService {
     await user.save()
 
     return friendCfg
+  }
+
+  async remove(user: IUser, removedUser: IUser): Promise<void> {
+    user.friends = user.friends.filter(
+      friend => friend.friendId.toString() !== removedUser._id.toString()
+    )
+    removedUser.friends = removedUser.friends.map(friend => ({
+      ...friend,
+      isRemoved: !(friend.friendId.toString() === removedUser._id.toString())
+    }))
+
+    await user.save()
+    await removedUser.save()
+  }
+
+  async clearChat(user: IUser, friendId: string): Promise<void> {
+    user.friends = user.friends.map(friend => ({
+      ...friend,
+      cleanedAt:
+        friendId.toString() === friendId ? Date.now() : friend.cleanedAt
+    }))
+
+    await user.save()
   }
 
   async sendMessage(chatId: string, message: Message): Promise<void> {

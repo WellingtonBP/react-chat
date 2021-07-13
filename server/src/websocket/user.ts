@@ -104,6 +104,28 @@ io.on('connect', socket => {
     }
   })
 
+  socket.on('remove_friend', async ({ id }) => {
+    if (!id) return
+
+    const user = await User.findOne({ socketId: socket.id })
+    const removedUser = await User.findById(id)
+    if (!user || !removedUser) return
+
+    await friendsService.remove(user, removedUser)
+    if (removedUser.isOnline) {
+      io.to(removedUser.socketId).emit('removed_friend', { id: user._id })
+    }
+  })
+
+  socket.on('clear_chat', async ({ id }) => {
+    if (!id) return
+
+    const user = await User.findOne({ socketId: socket.id })
+    if (!user) return
+
+    await friendsService.clearChat(user, id)
+  })
+
   socket.on('disconnect', async () => {
     const user = await User.findOne({ socketId: socket.id })
     await usersService.changeStatusAndSocketId(user, false)
