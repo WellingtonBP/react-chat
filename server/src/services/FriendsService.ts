@@ -1,4 +1,4 @@
-import Chat, { Message } from '../models/Chat'
+import Chat, { IChat, Message } from '../models/Chat'
 import User, { IUser } from '../models/User'
 
 type FindOrRequestResponseBaseType = {
@@ -10,7 +10,7 @@ type FindOrRequestResponseBaseType = {
 type AcceptResponse = {
   unreadMessages: number
   isRemoved: boolean
-  chatId: string
+  chatId: IChat
 }
 
 function mutualFriendsCounter(user1: IUser, user2: IUser): number {
@@ -106,7 +106,7 @@ class FriendsService {
     await user.save()
     await user.save()
 
-    return friendCfg
+    return { ...friendCfg, chatId: chat }
   }
 
   async remove(user: IUser, removedUser: IUser): Promise<void> {

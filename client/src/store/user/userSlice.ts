@@ -17,6 +17,16 @@ type SetUserAction = {
   payload: UserSlice
 }
 
+type NewFriendRequest = {
+  type: string
+  payload: {
+    userId: string
+    name: string
+    avatar?: string
+    mutuals: number
+  }
+}
+
 const initialState: UserSlice = {
   name: '',
   avatar: null,
@@ -33,6 +43,9 @@ const user = createSlice({
       state.avatar = payload.avatar
       state.requestsReceived = payload.requestsReceived
       state.socket = payload.socket
+    },
+    newFriendRequest(state, { payload }: NewFriendRequest) {
+      state.requestsReceived = [...state.requestsReceived, payload]
     }
   }
 })
