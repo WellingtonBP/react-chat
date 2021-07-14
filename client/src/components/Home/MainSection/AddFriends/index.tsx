@@ -1,36 +1,42 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 
+import { RootState } from '../../../../store'
+import { find } from '../../../../services/api'
+import FindResponse from '../../../../types/FindResponse'
 import searchIcon from '../../../../assets/images/searchIcon.svg'
 import UserFound from '../../UserFound'
 import ActionButton from '../../ActionButton'
 import { SearchForm } from './styles'
 
-const DUMMY_FOUND_USERS = [
-  {
-    id: 'request-1',
-    name: 'Fabio Andre',
-    mutuals: 4
-  },
-  {
-    id: 'request-2',
-    name: 'Roger Malaquias',
-    mutuals: 0
-  },
-  {
-    id: 'request-3',
-    name: 'Fabiola Fabiana',
-    mutuals: 7
-  }
-]
-
 const AddFriends: React.FC = () => {
+  const [search, setSearch] = useState('')
+  const [foundUsers, setFoundUsers] = useState<FindResponse[]>([])
+  const token = useSelector((state: RootState) => state.auth.token)
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const foundUsers = search !== '' ? await find(search, token) : []
+      setFoundUsers(foundUsers)
+    }
+    const fetchTimeout = setTimeout(() => fetchUsers(), 600)
+
+    return () => clearTimeout(fetchTimeout)
+  }, [search, token])
+
   return (
     <>
       <SearchForm>
-        <input type="text" placeholder="Search" title="Search Friends" />
+        <input
+          type="text"
+          placeholder="Search"
+          title="Search Friends"
+          value={search}
+          onChange={evt => setSearch(evt.target.value)}
+        />
         <img src={searchIcon} alt="" />
       </SearchForm>
-      {DUMMY_FOUND_USERS.map(user => (
+      {foundUsers.map(user => (
         <UserFound
           name={user.name}
           key={user.id}
@@ -40,7 +46,7 @@ const AddFriends: React.FC = () => {
           }
         />
       ))}
-      {DUMMY_FOUND_USERS.length < 1 && <h1 id="info">No users found</h1>}
+      {foundUsers.length < 1 && <h1 id="info">No users found</h1>}
     </>
   )
 }

@@ -1,4 +1,4 @@
-import { useReducer } from 'react'
+import { useReducer, ChangeEvent } from 'react'
 
 type FormState = Record<
   string,
@@ -75,7 +75,10 @@ function useForm(fieldsCfg: UseFormProps) {
     .map(key => state[key].valid)
     .reduce((acc, val) => acc && val)
 
-  const changeInputHandler = (field: string, event) =>
+  const changeInputHandler = (
+    field: string,
+    event: ChangeEvent<HTMLInputElement>
+  ) =>
     formStateDispatch({
       type: 'INPUT_CHANGE',
       input: { field, value: event.target.value }

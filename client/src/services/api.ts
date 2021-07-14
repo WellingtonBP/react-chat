@@ -1,4 +1,5 @@
 import SignAndLoginResponse from '../types/SignAndLoginResponse'
+import FindResponse from '../types/FindResponse'
 
 const api = process.env.REACT_APP_API_HOST
 
@@ -61,4 +62,26 @@ async function login(
   return data
 }
 
-export { sign, login }
+async function find(
+  name: string,
+  token: string
+): Promise<FindResponse[] | never> {
+  const response = await fetch(`${api}/friends/find?name=${name}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    }
+  })
+
+  const data = await response.json()
+
+  if (!response.ok) {
+    const errMessage = data.error || 'Something went wrong!'
+    throw new Error(errMessage)
+  }
+
+  return data
+}
+
+export { sign, login, find }

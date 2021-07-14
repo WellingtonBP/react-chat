@@ -30,7 +30,7 @@ class FriendsService {
   ): Promise<(FindOrRequestResponseBaseType & { id: string })[]> {
     const foundUsers = await User.find({
       name: { $regex: name, $options: 'gi' }
-    }).select('name avatar friends')
+    }).select('name avatar friends requestsSent requestsReceived')
 
     const user = await User.findById(id).select(
       'friends requestsSent requestsReceived -_id'

@@ -26,7 +26,7 @@ route.post(
 )
 
 route.get(
-  '/users/friends/find',
+  '/friends/find',
   isAuth,
   findFriendsValidators,
   validationCheckResult,
