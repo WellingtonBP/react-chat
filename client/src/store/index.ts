@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit'
+import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
 
 import { reducer as authReducer } from './auth/authSlice'
 import { reducer as userReducer } from './user/userSlice'
@@ -9,7 +9,8 @@ const store = configureStore({
     auth: authReducer,
     user: userReducer,
     friends: friendsReducer
-  }
+  },
+  middleware: getDefaultMiddleware({ serializableCheck: false })
 })
 
 export default store

@@ -10,7 +10,7 @@ import ICustomError from './utils/ICustomError'
 
 const app = express()
 const httpServer = createServer(app)
-const io = new Server(httpServer)
+const io = new Server(httpServer, { cors: { origin: '*' } })
 
 app.use(express.json())
 app.use(cors())

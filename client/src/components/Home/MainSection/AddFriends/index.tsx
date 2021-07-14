@@ -13,6 +13,7 @@ const AddFriends: React.FC = () => {
   const [search, setSearch] = useState('')
   const [foundUsers, setFoundUsers] = useState<FindResponse[]>([])
   const token = useSelector((state: RootState) => state.auth.token)
+  const socket = useSelector((state: RootState) => state.user.socket)
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -23,6 +24,18 @@ const AddFriends: React.FC = () => {
 
     return () => clearTimeout(fetchTimeout)
   }, [search, token])
+
+  const addFriendHandler = async (id: string) => {
+    const confirmation = window.confirm(
+      'Are you sure you want to add this user to your friends?'
+    )
+
+    if (confirmation) {
+      socket.emit('send_friend_request', { id })
+      setFoundUsers(prev => prev.filter(user => user.id !== id))
+      alert('Request Sent!')
+    }
+  }
 
   return (
     <>
@@ -42,7 +55,12 @@ const AddFriends: React.FC = () => {
           key={user.id}
           mutuals={user.mutuals}
           actions={
-            <ActionButton background="var(--darkBlue)">Add</ActionButton>
+            <ActionButton
+              background="var(--darkBlue)"
+              onClick={addFriendHandler.bind(null, user.id)}
+            >
+              Add
+            </ActionButton>
           }
         />
       ))}

@@ -9,7 +9,7 @@ type UserSlice = {
     avatar?: string
     mutuals: number
   }[]
-  requestsSent: string[]
+  socket: any
 }
 
 type SetUserAction = {
@@ -21,7 +21,7 @@ const initialState: UserSlice = {
   name: '',
   avatar: null,
   requestsReceived: [],
-  requestsSent: []
+  socket: null
 }
 
 const user = createSlice({
@@ -32,7 +32,7 @@ const user = createSlice({
       state.name = payload.name
       state.avatar = payload.avatar
       state.requestsReceived = payload.requestsReceived
-      state.requestsSent = payload.requestsSent
+      state.socket = payload.socket
     }
   }
 })
