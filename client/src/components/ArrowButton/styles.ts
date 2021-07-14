@@ -11,7 +11,8 @@ const Button = styled.button`
   font-size: 1.5rem;
   color: white;
   transition: filter 300ms;
-  &:hover {
+  &:hover,
+  &:disabled {
     filter: brightness(1.3);
   }
 

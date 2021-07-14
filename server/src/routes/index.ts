@@ -12,21 +12,21 @@ const route = Router()
 const usersController = new UsersController()
 
 route.post(
-  'users/signup',
+  '/users/signup',
   signupValidators,
   validationCheckResult,
   usersController.signup
 )
 
 route.post(
-  'users/login',
+  '/users/login',
   loginValidators,
   validationCheckResult,
   usersController.login
 )
 
 route.get(
-  'users/friends/find',
+  '/users/friends/find',
   isAuth,
   findFriendsValidators,
   validationCheckResult,

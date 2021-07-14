@@ -3,6 +3,7 @@ import styled from 'styled-components'
 const Spinner = styled.div`
   width: 3rem;
   height: 3rem;
+  margin: 0 auto;
   border-radius: 50%;
   border: 3px solid var(--darkBlue);
   border-bottom-color: transparent;
