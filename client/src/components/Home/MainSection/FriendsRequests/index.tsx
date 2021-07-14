@@ -1,28 +1,16 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 
+import { RootState } from '../../../../store'
 import UserFound from '../../UserFound'
 import ActionButton from '../../ActionButton'
 import { Actions } from './styles'
 
-const DUMMY_REQUESTS = [
-  {
-    id: 'request-1',
-    name: 'Fabio Andre',
-    mutuals: 4
-  },
-  {
-    id: 'request-2',
-    name: 'Roger Malaquias',
-    mutuals: 0
-  },
-  {
-    id: 'request-3',
-    name: 'Fabiola Fabiana',
-    mutuals: 7
-  }
-]
-
 const FriendsRequests: React.FC = () => {
+  const friendsRequest = useSelector(
+    (state: RootState) => state.user.requestsReceived
+  )
+
   const actions = (
     <Actions>
       <ActionButton type="button" background="var(--darkGreen)">
@@ -35,15 +23,18 @@ const FriendsRequests: React.FC = () => {
   )
   return (
     <>
-      {DUMMY_REQUESTS.map(request => (
+      {friendsRequest.map(request => (
         <UserFound
-          key={request.id}
+          avatar={request.avatar}
+          key={request.userId}
           mutuals={request.mutuals}
           name={request.name}
           actions={actions}
         />
       ))}
-      {DUMMY_REQUESTS.length < 1 && <h1 id="info">No friends requests</h1>}
+      {friendsRequest.length < 1 && (
+        <h1 id="info">No friends requests found</h1>
+      )}
     </>
   )
 }

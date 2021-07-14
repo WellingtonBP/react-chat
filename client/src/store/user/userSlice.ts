@@ -29,7 +29,10 @@ const user = createSlice({
   initialState,
   reducers: {
     setUser(state, { payload }: SetUserAction) {
-      state = payload
+      state.name = payload.name
+      state.avatar = payload.avatar
+      state.requestsReceived = payload.requestsReceived
+      state.requestsSent = payload.requestsSent
     }
   }
 })

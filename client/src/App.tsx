@@ -14,12 +14,9 @@ const App: React.FC = () => {
   return (
     <BrowserRouter>
       <Switch>
-        <Route path="/" exact>
-          <Redirect to={`/${isAuth ? 'home' : 'login'}`} />
-        </Route>
-        <Route path="/login">{isAuth ? <Home /> : <Login />}</Route>
-        <Route path="/sign">{isAuth ? <Home /> : <Sign />}</Route>
-        <Route path="/home">{isAuth ? <Home /> : <Login />}</Route>
+        <Route path="/login">{isAuth ? <Redirect to="/" /> : <Login />}</Route>
+        <Route path="/sign">{isAuth ? <Redirect to="/" /> : <Sign />}</Route>
+        <Route path="/">{isAuth ? <Home /> : <Redirect to="/login" />}</Route>
       </Switch>
       <GlobalStyles />
     </BrowserRouter>

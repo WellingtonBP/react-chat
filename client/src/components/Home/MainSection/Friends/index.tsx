@@ -1,54 +1,22 @@
 import React, { useState } from 'react'
+import { useSelector } from 'react-redux'
 
+import { RootState } from '../../../../store'
 import defaultAvatarIcon from '../../../../assets/images/defaultAvatarIcon.svg'
 import dotsIcon from '../../../../assets/images/dotsIcon.svg'
 import { FriendWrapper, FriendHeader, FriendOptions } from './styles'
 
-const DUMMY_FRIENDS = [
-  {
-    id: 'friend-1',
-    name: 'João Silva',
-    avatar: null,
-    isOnline: true,
-    unreadMessages: 3,
-    lastMessage:
-      'Lorem Ipsum is simply dummy text of the printing asdsaa a adas aasdsa sda '
-  },
-  {
-    id: 'friend-2',
-    name: 'Maria Souza',
-    isOnline: true,
-    unreadMessages: 1,
-    lastMessage: 'Lorem Ipsum is simply dummy text of the printing',
-    avatar: null
-  },
-  {
-    id: 'friend-3',
-    name: 'Andre Ferreira',
-    isOnline: false,
-    unreadMessages: 0,
-    lastMessage: 'Lorem Ipsum is simply dummy text of the printing',
-    avatar: null
-  },
-  {
-    id: 'friend-4',
-    name: 'Adriana Soares',
-    isOnline: false,
-    unreadMessages: 0,
-    lastMessage: 'Lorem Ipsum is simply dummy text of the printing',
-    avatar: null
-  }
-]
-
 const Friends: React.FC = () => {
   const [showOptions, setShowOptions] = useState(false)
+  const friends = useSelector((state: RootState) => state.friends)
+
   return (
     <>
-      {DUMMY_FRIENDS.map(friend => (
+      {friends.map(friend => (
         <FriendWrapper
-          id={friend.id}
+          id={friend._id}
           className={friend.unreadMessages !== 0 ? 'new-message' : ''}
-          key={friend.id}
+          key={friend._id}
         >
           <FriendHeader>
             <div>
@@ -79,10 +47,14 @@ const Friends: React.FC = () => {
               </FriendOptions>
             )}
           </FriendHeader>
-          <p>{friend.lastMessage.substring(0, 100)}</p>
+          <p>
+            {friend.chat.messages[
+              friend.chat.messages.length - 1
+            ].content.substring(0, 100)}
+          </p>
         </FriendWrapper>
       ))}
-      {DUMMY_FRIENDS.length < 1 && <h1 id="info">No friends found</h1>}
+      {friends.length < 1 && <h1 id="info">No friends found</h1>}
     </>
   )
 }
