@@ -126,12 +126,13 @@ class FriendsService {
     await removedUser.save()
   }
 
-  async clearChat(user: IUser, friendId: string): Promise<void> {
-    user.friends = user.friends.map(friend => ({
-      ...friend,
-      cleanedAt:
-        friendId.toString() === friendId ? Date.now() : friend.cleanedAt
-    }))
+  async clearChat(user: IUser, friendId: string, date: number): Promise<void> {
+    user.friends = user.friends.map(friend => {
+      if (friend.friendId.toString() === friendId) {
+        friend.cleanedAt = date
+      }
+      return friend
+    })
 
     await user.save()
   }

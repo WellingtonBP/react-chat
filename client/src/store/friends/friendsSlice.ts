@@ -66,6 +66,14 @@ type DisconnectFriendAction = {
   }
 }
 
+type ClearChatAction = {
+  type: string
+  payload: {
+    id: string
+    date: number
+  }
+}
+
 const initialState = {
   array: [] as FriendsSlice[]
 }
@@ -100,6 +108,16 @@ const friends = createSlice({
             sender: payload.sender,
             senderAt: payload.senderAt
           })
+        }
+        return friend
+      })
+    },
+    clearChat(state, { payload }: ClearChatAction) {
+      state.array = state.array.map(friend => {
+        if (friend._id === payload.id) {
+          friend.chat.messages = friend.chat.messages.filter(
+            message => message.senderAt > payload.date
+          )
         }
         return friend
       })

@@ -114,6 +114,26 @@ class UsersController {
       next(err)
     }
   }
+
+  async clearChat(
+    req: IAuthenticatedReq,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { friendId, date } = req.body
+      const id = req.userId
+      const friendsService = new FriendsService()
+
+      const user = await User.findById(id)
+
+      await friendsService.clearChat(user, friendId, Number(date))
+
+      res.status(204).end()
+    } catch (err) {
+      next(err)
+    }
+  }
 }
 
 export default UsersController

@@ -140,4 +140,24 @@ async function setUnreadMessages(
   if (!response.ok) throw new Error('Something went wrong')
 }
 
-export { sign, login, find, setUnreadMessages }
+async function clearChat(
+  token: string,
+  friendId: string,
+  date: number
+): Promise<void> {
+  const response = await fetch(`${api}/friends/clear-chat`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      friendId,
+      date
+    })
+  })
+
+  if (!response.ok) throw new Error('Something went wrong')
+}
+
+export { sign, login, find, setUnreadMessages, clearChat }

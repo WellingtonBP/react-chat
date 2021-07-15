@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
-import { setUnreadMessages } from '../../../../services/api'
+import { setUnreadMessages, clearChat } from '../../../../services/api'
 import { RootState, AppDispatch } from '../../../../store'
 import { actions as userActions } from '../../../../store/user/userSlice'
 import {
@@ -33,7 +33,7 @@ const Friends: React.FC = () => {
   const token = useSelector((state: RootState) => state.auth.token)
   const socket = useSelector((state: RootState) => state.user.socket)
 
-  const startChat = (friendId: string) => {
+  const startChatHandler = (friendId: string) => {
     dispatch(userActions.startChat({ id: friendId }))
     if (friends.find(friend => friend._id === friendId).unreadMessages > 0) {
       dispatch(friendsActions.setUnreadMessages({ id: friendId, reset: true }))
@@ -41,7 +41,7 @@ const Friends: React.FC = () => {
     }
   }
 
-  const removeFriend = (friendId: string) => {
+  const removeFriendHandler = (friendId: string) => {
     const confirmation = window.confirm(
       'Are you sure you want to delete this friend?'
     )
@@ -52,6 +52,12 @@ const Friends: React.FC = () => {
     }
   }
 
+  const clearChatHandler = (friendId: string) => {
+    const date = Date.now()
+    dispatch(friendsActions.clearChat({ id: friendId, date }))
+    clearChat(token, friendId, date)
+  }
+
   return (
     <>
       {[...friends].sort(sortFriends).map((friend, index) => (
@@ -60,7 +66,7 @@ const Friends: React.FC = () => {
           className={friend.unreadMessages !== 0 ? 'new-message' : ''}
           key={friend._id}
           aria-label={`Click to chat with ${friend.name}`}
-          onClick={startChat.bind(null, friend._id)}
+          onClick={startChatHandler.bind(null, friend._id)}
         >
           <FriendHeader>
             <div>
@@ -89,14 +95,20 @@ const Friends: React.FC = () => {
             </button>
             {showOptions[index] && (
               <FriendOptions>
-                <button type="button">
+                <button
+                  type="button"
+                  onClick={evt => {
+                    evt.stopPropagation()
+                    clearChatHandler(friend._id)
+                  }}
+                >
                   <li>Clear Messages</li>
                 </button>
                 <button
                   type="button"
                   onClick={evt => {
                     evt.stopPropagation()
-                    removeFriend(friend._id)
+                    removeFriendHandler(friend._id)
                   }}
                 >
                   <li>Remove Friend</li>

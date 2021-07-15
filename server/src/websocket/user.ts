@@ -120,15 +120,6 @@ io.on('connect', socket => {
     }
   })
 
-  socket.on('clear_chat', async ({ id }) => {
-    if (!id) return
-
-    const user = await User.findOne({ socketId: socket.id })
-    if (!user) return
-
-    friendsService.clearChat(user, id)
-  })
-
   socket.on('disconnect', async () => {
     const user = await User.findOne({ socketId: socket.id })
     usersService.changeStatusAndSocketId(user, false)

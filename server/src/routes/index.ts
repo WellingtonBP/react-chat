@@ -6,6 +6,7 @@ import signupValidators from '../middlewares/signupValidators'
 import loginValidators from '../middlewares/loginValidators'
 import findFriendsValidators from '../middlewares/findFriendsValidators'
 import setUnreadMessagesValidators from '../middlewares/setUnreadMessagesValidators'
+import clearChatValidators from '../middlewares/clearChatValidators'
 import validationCheckResult from '../middlewares/validationCheckResult'
 import isAuth from '../middlewares/isAuth'
 
@@ -40,6 +41,14 @@ route.post(
   setUnreadMessagesValidators,
   validationCheckResult,
   usersController.setUnreadMessages
+)
+
+route.post(
+  '/friends/clear-chat',
+  isAuth,
+  clearChatValidators,
+  validationCheckResult,
+  usersController.clearChat
 )
 
 export default route

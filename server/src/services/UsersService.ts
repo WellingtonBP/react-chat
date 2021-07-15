@@ -32,21 +32,15 @@ class UsersService {
       // filter messages
       populatedUser.friends = populatedUser.friends.map(friend => {
         if (friend.cleanedAt) {
-          friend = {
-            ...friend,
-            chatId: {
-              ...friend.chatId,
-              messages: (<IChat>friend.chatId).messages.filter(
-                message => message.senderAt > friend.cleanedAt
-              )
-            }
-          } as typeof friend
+          ;(<IChat>friend.chatId).messages = (<IChat>(
+            friend.chatId
+          )).messages.filter(message => message.senderAt > friend.cleanedAt)
         }
         return friend
       })
-
       return populatedUser
     }
+
     return user
   }
 }
