@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Suspense, lazy } from 'react'
 import { NavLink, Route, Switch } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
@@ -8,9 +8,7 @@ import logoutIcon from '../../../assets/images/logoutIcon.svg'
 import messagesIcon from '../../../assets/images/messagesIcon.svg'
 import friendsReqIcon from '../../../assets/images/friedsReqIcon.svg'
 import addFriendsIcon from '../../../assets/images/addFriendsIcon.svg'
-import Friends from './Friends'
-import AddFriends from './AddFriends'
-import FriendsRequests from './FriendsRequests'
+import Spinner from '../../../components/Spinner'
 
 import {
   MainSectionContainer,
@@ -19,6 +17,10 @@ import {
   NavItem,
   MainSectionContent
 } from './styles'
+
+const AddFriends = lazy(() => import('./AddFriends'))
+const FriendsRequests = lazy(() => import('./FriendsRequests'))
+const Friends = lazy(() => import('./Friends'))
 
 const MainSection: React.FC<{ isChatting: boolean }> = ({ isChatting }) => {
   const user = useSelector((state: RootState) => state.user)
@@ -57,11 +59,13 @@ const MainSection: React.FC<{ isChatting: boolean }> = ({ isChatting }) => {
         </NavList>
       </nav>
       <MainSectionContent>
-        <Switch>
-          <Route path="/" exact component={Friends} />
-          <Route path="/requests" component={FriendsRequests} />
-          <Route path="/add-friends" component={AddFriends} />
-        </Switch>
+        <Suspense fallback={<Spinner />}>
+          <Switch>
+            <Route path="/" exact component={Friends} />
+            <Route path="/requests" component={FriendsRequests} />
+            <Route path="/add-friends" component={AddFriends} />
+          </Switch>
+        </Suspense>
       </MainSectionContent>
     </MainSectionContainer>
   )

@@ -52,4 +52,4 @@ const FriendsRequests: React.FC = () => {
   )
 }
 
-export default FriendsRequests
+export default React.memo(FriendsRequests)
