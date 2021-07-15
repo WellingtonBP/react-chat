@@ -88,6 +88,22 @@ const NavItem = styled.li`
       height: 2.7rem;
     }
   }
+  position: relative;
+  &::after {
+    position: absolute;
+    color: var(--lightGrayishBlue);
+    font-weight: bold;
+    font-size: 1.1rem;
+    top: -0.8rem;
+  }
+  &.unread-messages::after {
+    content: attr(data-messages);
+    right: -1.5rem;
+  }
+  &.new-requests::after {
+    content: attr(data-requests);
+    right: -1.2rem;
+  }
 
   @media (min-width: 576px) {
     a span {

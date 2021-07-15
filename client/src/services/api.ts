@@ -104,7 +104,6 @@ async function find(
   token: string
 ): Promise<FindResponse[] | never> {
   const response = await fetch(`${api}/friends/find?name=${name}`, {
-    method: 'GET',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`
@@ -121,4 +120,24 @@ async function find(
   return data
 }
 
-export { sign, login, find }
+async function setUnreadMessages(
+  token: string,
+  friendId: string,
+  reset = false
+): Promise<void> {
+  const response = await fetch(`${api}/friends/set-unread-messages`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      friendId,
+      reset
+    })
+  })
+
+  if (!response.ok) throw new Error('Something went wrong')
+}
+
+export { sign, login, find, setUnreadMessages }

@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-type FriendsSlice = {
+export type FriendsSlice = {
   _id: string
   name: string
   avatar?: string
@@ -52,6 +52,14 @@ type RemoveFriendAction = {
   }
 }
 
+type SetUnreadMessagesAction = {
+  type: string
+  payload: {
+    id: string
+    reset: boolean
+  }
+}
+
 type DisconnectFriendAction = RemoveFriendAction
 
 const initialState = {
@@ -65,6 +73,9 @@ const friends = createSlice({
     setFriends(state, { payload }: SetFriendAction) {
       state.array = payload
     },
+    resetFriends(state) {
+      state.array = []
+    },
     newFriendOnline(state, { payload }: NewFriendOnlineAction) {
       state.array = state.array.map(friend => {
         if (friend._id === payload.id) {
@@ -76,7 +87,6 @@ const friends = createSlice({
     },
     newFriend(state, { payload }: NewFriendAction) {
       state.array.push(payload)
-      console.log(payload)
     },
     newMessage(state, { payload }: NewMessageAction) {
       state.array = state.array.map(friend => {
@@ -86,6 +96,14 @@ const friends = createSlice({
             sender: payload.sender,
             senderAt: payload.senderAt
           })
+        }
+        return friend
+      })
+    },
+    setUnreadMessages(state, { payload }: SetUnreadMessagesAction) {
+      state.array = state.array.map(friend => {
+        if (friend._id === payload.id) {
+          friend.unreadMessages = payload.reset ? 0 : friend.unreadMessages + 1
         }
         return friend
       })

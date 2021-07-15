@@ -1,8 +1,10 @@
 import { Dispatch } from '@reduxjs/toolkit'
 import { Socket } from 'socket.io-client'
 
+import { setUnreadMessages } from './api'
 import { actions as friendsActions } from '../store/friends/friendsSlice'
 import { actions as userActions } from '../store/user/userSlice'
+import store from '../store'
 
 export type AcceptedFriendSocket = {
   unreadMessages: number
@@ -49,6 +51,12 @@ function socketListeners(socket: Socket, dispatch: Dispatch): void {
 
   socket.on('new_message', message => {
     dispatch(friendsActions.newMessage(message))
+    if (store.getState().user.chattingWith !== message.sender) {
+      dispatch(
+        friendsActions.setUnreadMessages({ id: message.sender, reset: false })
+      )
+      setUnreadMessages(store.getState().auth.token, message.sender)
+    }
   })
 
   socket.on('removed_friend', id => {

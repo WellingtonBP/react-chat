@@ -1,24 +1,52 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
+import { setUnreadMessages } from '../../../../services/api'
 import { RootState, AppDispatch } from '../../../../store'
 import { actions as userActions } from '../../../../store/user/userSlice'
+import {
+  actions as friendsActions,
+  FriendsSlice
+} from '../../../../store/friends/friendsSlice'
 import defaultAvatarIcon from '../../../../assets/images/defaultAvatarIcon.svg'
 import dotsIcon from '../../../../assets/images/dotsIcon.svg'
 import { FriendWrapper, FriendHeader, FriendOptions } from './styles'
+
+const sortFriends = (a: FriendsSlice, b: FriendsSlice) => {
+  if (a.isOnline && !b.isOnline) {
+    return -1
+  } else if (a.isOnline && b.isOnline) {
+    if (a.unreadMessages && !b.unreadMessages) {
+      return -1
+    } else if (!a.unreadMessages && !b.unreadMessages) {
+      return 0
+    }
+  } else if (!a.isOnline && !b.isOnline) {
+    if (a.unreadMessages && !b.unreadMessages) {
+      return -1
+    } else if (!a.unreadMessages && !b.unreadMessages) {
+      return 0
+    }
+  }
+}
 
 const Friends: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
   const [showOptions, setShowOptions] = useState(false)
   const friends = useSelector((state: RootState) => state.friends.array)
+  const token = useSelector((state: RootState) => state.auth.token)
 
-  const startChat = (friendId: string) => {
+  const startChat = async (friendId: string) => {
     dispatch(userActions.startChat({ id: friendId }))
+    if (friends.find(friend => friend._id === friendId).unreadMessages > 0) {
+      dispatch(friendsActions.setUnreadMessages({ id: friendId, reset: true }))
+      await setUnreadMessages(token, friendId, true)
+    }
   }
 
   return (
     <>
-      {friends.map(friend => (
+      {[...friends].sort(sortFriends).map(friend => (
         <FriendWrapper
           id={friend._id}
           className={friend.unreadMessages !== 0 ? 'new-message' : ''}

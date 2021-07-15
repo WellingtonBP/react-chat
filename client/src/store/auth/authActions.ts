@@ -47,4 +47,12 @@ function authAction(
   }
 }
 
-export { authAction }
+function logoutAction(): (dispatch: Dispatch) => void {
+  return dispatch => {
+    dispatch(authActions.logout())
+    dispatch(userActions.resetUser())
+    dispatch(friendsActions.resetFriends())
+  }
+}
+
+export { authAction, logoutAction }

@@ -1,8 +1,9 @@
 import React, { Suspense, lazy } from 'react'
 import { NavLink, Route, Switch } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
-import { RootState } from '../../../store'
+import { RootState, AppDispatch } from '../../../store'
+import { logoutAction } from '../../../store/auth/authActions'
 import defaultAvatarIcon from '../../../assets/images/defaultAvatarIcon.svg'
 import logoutIcon from '../../../assets/images/logoutIcon.svg'
 import messagesIcon from '../../../assets/images/messagesIcon.svg'
@@ -24,6 +25,15 @@ const Friends = lazy(() => import('./Friends'))
 
 const MainSection: React.FC = () => {
   const user = useSelector((state: RootState) => state.user)
+  const friends = useSelector((state: RootState) => state.friends.array)
+  const dispatch = useDispatch<AppDispatch>()
+
+  let unreadMessages = 0
+  for (const friend of friends) {
+    unreadMessages += friend.unreadMessages
+  }
+
+  const qtdRequests = user.requestsReceived.length
 
   return (
     <MainSectionContainer className={!!user.chattingWith ? 'chatting' : ''}>
@@ -32,19 +42,31 @@ const MainSection: React.FC = () => {
           <img src={user.avatar ?? defaultAvatarIcon} alt="avatar" />
           {user.name}
         </button>
-        <button id="logout-button" type="button">
+        <button
+          id="logout-button"
+          type="button"
+          onClick={() => dispatch(logoutAction())}
+        >
           <img src={logoutIcon} alt="Logout" />
         </button>
       </Header>
       <nav>
         <NavList>
-          <NavItem>
+          <NavItem
+            className={unreadMessages ? 'unread-messages' : ''}
+            data-messages={unreadMessages}
+            aria-label={`${unreadMessages} new messages`}
+          >
             <NavLink to="/" exact activeClassName="active">
               <img src={messagesIcon} alt="MessagesIcon" />
               <span>Messages</span>
             </NavLink>
           </NavItem>
-          <NavItem>
+          <NavItem
+            className={qtdRequests ? 'new-requests' : ''}
+            data-requests={qtdRequests}
+            aria-label={`${qtdRequests} new requests`}
+          >
             <NavLink to="/requests" activeClassName="active">
               <img src={friendsReqIcon} alt="Frieds Requests Icon" />
               <span>Friends Requests</span>

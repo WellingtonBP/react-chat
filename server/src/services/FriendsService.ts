@@ -132,11 +132,38 @@ class FriendsService {
     await user.save()
   }
 
-  async sendMessage(chatId: string, message: Message): Promise<void> {
+  async sendMessage(
+    chatId: string,
+    message: Message,
+    toUser: IUser
+  ): Promise<void> {
     const chat = await Chat.findById(chatId)
+
+    if (!toUser.isOnline) {
+      toUser.friends.map(friend => {
+        if (friend.chatId.toString() === chatId) {
+          friend.unreadMessages++
+        }
+        return friend
+      })
+      await toUser.save()
+    }
 
     chat.messages.push(message)
     await chat.save()
+  }
+
+  async setUnreadMessages(userId: string, friendId: string, reset: boolean) {
+    const user = await User.findById(userId)
+
+    user.friends = user.friends.map(friend => {
+      if (friend.friendId.toString() === friendId) {
+        friend.unreadMessages = reset ? 0 : friend.unreadMessages + 1
+      }
+      return friend
+    })
+
+    await user.save()
   }
 }
 

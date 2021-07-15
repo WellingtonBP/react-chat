@@ -101,7 +101,7 @@ io.on('connect', socket => {
     const { chatId } = fromUser.friends.find(
       friend => friend.friendId.toString() === id
     )
-    await friendsService.sendMessage(chatId.toString(), message)
+    friendsService.sendMessage(chatId.toString(), message, toUser)
     if (toUser.isOnline) {
       io.to(toUser.socketId).emit('new_message', message)
     }
@@ -114,7 +114,7 @@ io.on('connect', socket => {
     const removedUser = await User.findById(id)
     if (!user || !removedUser) return
 
-    await friendsService.remove(user, removedUser)
+    friendsService.remove(user, removedUser)
     if (removedUser.isOnline) {
       io.to(removedUser.socketId).emit('removed_friend', { id: user._id })
     }
@@ -126,12 +126,12 @@ io.on('connect', socket => {
     const user = await User.findOne({ socketId: socket.id })
     if (!user) return
 
-    await friendsService.clearChat(user, id)
+    friendsService.clearChat(user, id)
   })
 
   socket.on('disconnect', async () => {
     const user = await User.findOne({ socketId: socket.id })
-    await usersService.changeStatusAndSocketId(user, false)
+    usersService.changeStatusAndSocketId(user, false)
 
     const userFriends = (await usersService.populateUser(user)).friends
     userFriends

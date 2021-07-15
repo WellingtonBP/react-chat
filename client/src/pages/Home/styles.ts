@@ -17,7 +17,7 @@ const Main = styled.main`
     display: flex;
     height: 80%;
     width: 80%;
-    max-width: 120rem;
+    max-width: 100rem;
     max-height: 100rem;
     position: relative;
     margin-top: 6rem;

@@ -5,6 +5,7 @@ import UsersController from '../controllers/UsersController'
 import signupValidators from '../middlewares/signupValidators'
 import loginValidators from '../middlewares/loginValidators'
 import findFriendsValidators from '../middlewares/findFriendsValidators'
+import setUnreadMessagesValidators from '../middlewares/setUnreadMessagesValidators'
 import validationCheckResult from '../middlewares/validationCheckResult'
 import isAuth from '../middlewares/isAuth'
 
@@ -31,6 +32,14 @@ route.get(
   findFriendsValidators,
   validationCheckResult,
   usersController.findNewFriend
+)
+
+route.post(
+  '/friends/set-unread-messages',
+  isAuth,
+  setUnreadMessagesValidators,
+  validationCheckResult,
+  usersController.setUnreadMessages
 )
 
 export default route

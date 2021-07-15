@@ -58,6 +58,15 @@ const user = createSlice({
       state.requestsReceived = payload.requestsReceived
       state.socket = payload.socket
     },
+    resetUser(state) {
+      state.socket.close()
+      state.id = ''
+      state.name = ''
+      state.avatar = null
+      state.requestsReceived = []
+      state.socket = null
+      state.chattingWith = null
+    },
     newFriendRequest(state, { payload }: NewFriendRequest) {
       state.requestsReceived = [...state.requestsReceived, payload]
     },
