@@ -51,7 +51,7 @@ io.on('connect', socket => {
     }
   })
 
-  socket.on('accept_friend_request', async ({ id }) => {
+  socket.on('accept_friend_request', async ({ id }, callback) => {
     if (!id) return
 
     const user = await User.findOne({ socketId: socket.id })
@@ -74,7 +74,7 @@ io.on('connect', socket => {
         }
       })
     }
-    socket.emit('accepted_friend_request', {
+    callback({
       ...acceptFriendResponse,
       friendId: {
         _id: acceptedFriend._id,

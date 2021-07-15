@@ -36,6 +36,8 @@ type StartChatAction = {
   }
 }
 
+type AcceptFriendAction = StartChatAction
+
 const initialState: UserSlice = {
   id: '',
   name: '',
@@ -64,6 +66,11 @@ const user = createSlice({
     },
     stopChat(state) {
       state.chattingWith = null
+    },
+    acceptFriend(state, { payload }: AcceptFriendAction) {
+      state.requestsReceived = state.requestsReceived.filter(
+        request => request.userId !== payload.id
+      )
     }
   }
 })

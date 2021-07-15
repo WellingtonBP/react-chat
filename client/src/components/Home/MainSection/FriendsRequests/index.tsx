@@ -1,12 +1,16 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
-import { RootState } from '../../../../store'
+import { actions as friendsActions } from '../../../../store/friends/friendsSlice'
+import { actions as userActions } from '../../../../store/user/userSlice'
+import { AcceptedFriendSocket } from '../../../../services/socketListeners'
+import { RootState, AppDispatch } from '../../../../store'
 import UserFound from '../../UserFound'
 import ActionButton from '../../ActionButton'
 import { Actions } from './styles'
 
 const FriendsRequests: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>()
   const friendsRequest = useSelector(
     (state: RootState) => state.user.requestsReceived
   )
@@ -17,8 +21,22 @@ const FriendsRequests: React.FC = () => {
       'Are you sure you want to accept this friend?'
     )
     if (confirmation) {
-      socket.emit('accept_friend_request', { id })
-      alert('Friend accepted!')
+      socket.emit(
+        'accept_friend_request',
+        { id },
+        (acceptedFriend: AcceptedFriendSocket) => {
+          const parsedAcceptedFriend = {
+            unreadMessages: acceptedFriend.unreadMessages,
+            isRemoved: acceptedFriend.isRemoved,
+            chat: acceptedFriend.chatId,
+            ...acceptedFriend.friendId
+          }
+
+          dispatch(friendsActions.newFriend(parsedAcceptedFriend))
+          dispatch(userActions.acceptFriend({ id }))
+          alert('Friend accepted!')
+        }
+      )
     }
   }
 
