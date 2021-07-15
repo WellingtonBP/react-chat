@@ -33,6 +33,7 @@ function authAction(
       )
       dispatch(
         userActions.setUser({
+          id: data.id,
           name: data.name,
           avatar: data.avatar,
           requestsReceived: data.requestsReceived,

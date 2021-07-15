@@ -22,6 +22,7 @@ class UsersController {
       })
 
       res.status(201).json({
+        id: _id,
         name,
         avatar,
         friends,
@@ -64,6 +65,7 @@ class UsersController {
       })
 
       res.status(200).json({
+        id: _id,
         name,
         avatar,
         friends,

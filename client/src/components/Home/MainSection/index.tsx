@@ -22,11 +22,11 @@ const AddFriends = lazy(() => import('./AddFriends'))
 const FriendsRequests = lazy(() => import('./FriendsRequests'))
 const Friends = lazy(() => import('./Friends'))
 
-const MainSection: React.FC<{ isChatting: boolean }> = ({ isChatting }) => {
+const MainSection: React.FC = () => {
   const user = useSelector((state: RootState) => state.user)
 
   return (
-    <MainSectionContainer className={isChatting ? 'chatting' : ''}>
+    <MainSectionContainer className={!!user.chattingWith ? 'chatting' : ''}>
       <Header>
         <button id="profile-button">
           <img src={user.avatar ?? defaultAvatarIcon} alt="avatar" />

@@ -8,6 +8,7 @@ export type FindResponse = {
 }
 
 export type SignResponse = {
+  id: string
   name: string
   avatar?: string
   requestsReceived: {

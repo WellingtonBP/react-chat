@@ -2,7 +2,7 @@ import React, { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { RootState } from '../store'
+import { RootState, AppDispatch } from '../store'
 import { authAction } from '../store/auth/authActions'
 import useForm, { UseFormProps } from '../hooks/useForm'
 import emailIcon from '../assets/images/emailIcon.svg'
@@ -30,7 +30,7 @@ const loginForm: UseFormProps = {
 }
 
 const Login: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { isLoading, authErr } = useSelector((state: RootState) => state.auth)
   const {
     state: formState,

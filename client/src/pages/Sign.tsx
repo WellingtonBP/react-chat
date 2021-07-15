@@ -2,7 +2,7 @@ import React, { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { RootState } from '../store'
+import { RootState, AppDispatch } from '../store'
 import { authAction } from '../store/auth/authActions'
 import useForm, { UseFormProps } from '../hooks/useForm'
 import userIcon from '../assets/images/userIcon.svg'
@@ -36,7 +36,7 @@ const signForm: UseFormProps = {
 }
 
 const Sign: React.FC = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { isLoading, authErr } = useSelector((state: RootState) => state.auth)
   const {
     state: formState,

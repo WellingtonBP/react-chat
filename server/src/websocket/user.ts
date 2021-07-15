@@ -86,8 +86,8 @@ io.on('connect', socket => {
     })
   })
 
-  socket.on('send_message', async ({ content, senderAt, id, chatId }) => {
-    if (!content || !senderAt || !id || !chatId) return
+  socket.on('send_message', async ({ content, senderAt, id }) => {
+    if (!content || !senderAt || !id) return
 
     const fromUser = await User.findOne({ socketId: socket.id })
     const toUser = await User.findById(id)
@@ -98,7 +98,10 @@ io.on('connect', socket => {
       senderAt,
       sender: fromUser._id
     }
-    await friendsService.sendMessage(chatId, message)
+    const { chatId } = fromUser.friends.find(
+      friend => friend.friendId.toString() === id
+    )
+    await friendsService.sendMessage(chatId.toString(), message)
     if (toUser.isOnline) {
       io.to(toUser.socketId).emit('new_message', message)
     }

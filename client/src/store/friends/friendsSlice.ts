@@ -38,6 +38,7 @@ type NewFriendAction = {
 type NewMessageAction = {
   type: string
   payload: {
+    id?: string
     content: string
     sender: string
     senderAt: number
@@ -68,6 +69,7 @@ const friends = createSlice({
       state.array = state.array.map(friend => {
         if (friend._id === payload.id) {
           friend.socketId = payload.socketId
+          friend.isOnline = true
         }
         return friend
       })
@@ -78,8 +80,12 @@ const friends = createSlice({
     },
     newMessage(state, { payload }: NewMessageAction) {
       state.array = state.array.map(friend => {
-        if (friend._id === payload.sender) {
-          friend.chat.messages.push(payload)
+        if (friend._id === (payload.id || payload.sender)) {
+          friend.chat.messages.push({
+            content: payload.content,
+            sender: payload.sender,
+            senderAt: payload.senderAt
+          })
         }
         return friend
       })

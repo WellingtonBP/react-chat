@@ -1,14 +1,20 @@
 import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
-import { RootState } from '../../../../store'
+import { RootState, AppDispatch } from '../../../../store'
+import { actions as userActions } from '../../../../store/user/userSlice'
 import defaultAvatarIcon from '../../../../assets/images/defaultAvatarIcon.svg'
 import dotsIcon from '../../../../assets/images/dotsIcon.svg'
 import { FriendWrapper, FriendHeader, FriendOptions } from './styles'
 
 const Friends: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>()
   const [showOptions, setShowOptions] = useState(false)
   const friends = useSelector((state: RootState) => state.friends.array)
+
+  const startChat = (friendId: string) => {
+    dispatch(userActions.startChat({ id: friendId }))
+  }
 
   return (
     <>
@@ -17,6 +23,8 @@ const Friends: React.FC = () => {
           id={friend._id}
           className={friend.unreadMessages !== 0 ? 'new-message' : ''}
           key={friend._id}
+          aria-label={`Click to chat with ${friend.name}`}
+          onClick={startChat.bind(null, friend._id)}
         >
           <FriendHeader>
             <div>

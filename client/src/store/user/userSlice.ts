@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 type UserSlice = {
+  id: string
   name: string
   avatar?: string
   requestsReceived: {
@@ -10,6 +11,7 @@ type UserSlice = {
     mutuals: number
   }[]
   socket: any
+  chattingWith?: string
 }
 
 type SetUserAction = {
@@ -27,11 +29,20 @@ type NewFriendRequest = {
   }
 }
 
+type StartChatAction = {
+  type: string
+  payload: {
+    id: string
+  }
+}
+
 const initialState: UserSlice = {
+  id: '',
   name: '',
   avatar: null,
   requestsReceived: [],
-  socket: null
+  socket: null,
+  chattingWith: null
 }
 
 const user = createSlice({
@@ -39,6 +50,7 @@ const user = createSlice({
   initialState,
   reducers: {
     setUser(state, { payload }: SetUserAction) {
+      state.id = payload.id
       state.name = payload.name
       state.avatar = payload.avatar
       state.requestsReceived = payload.requestsReceived
@@ -46,6 +58,12 @@ const user = createSlice({
     },
     newFriendRequest(state, { payload }: NewFriendRequest) {
       state.requestsReceived = [...state.requestsReceived, payload]
+    },
+    startChat(state, { payload }: StartChatAction) {
+      state.chattingWith = payload.id
+    },
+    stopChat(state) {
+      state.chattingWith = null
     }
   }
 })
