@@ -51,11 +51,13 @@ function socketListeners(socket: Socket, dispatch: Dispatch): void {
     dispatch(friendsActions.newMessage(message))
   })
 
-  socket.on('removed_friend', ({ id }) => {
+  socket.on('removed_friend', id => {
     dispatch(friendsActions.removeFriend(id))
   })
 
-  socket.on('friend_disconnect', ({ id }) => {})
+  socket.on('friend_disconnect', id => {
+    dispatch(friendsActions.friendDisconnected(id))
+  })
 }
 
 export default socketListeners
