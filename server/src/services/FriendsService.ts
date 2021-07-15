@@ -33,17 +33,18 @@ class FriendsService {
     }).select('name avatar friends requestsSent requestsReceived')
 
     const user = await User.findById(id).select(
-      'friends requestsSent requestsReceived -_id'
+      'friends requestsSent requestsReceived _id'
     )
 
     const parsedFoundUsers = foundUsers
       .filter(
         foundUser =>
-          foundUser.friends.findIndex(
+          user.friends.findIndex(
             ({ friendId }) => friendId.toString() === foundUser._id.toString()
           ) === -1 &&
-          !foundUser.requestsSent.includes(foundUser._id) &&
-          !foundUser.requestsReceived.includes(foundUser._id)
+          !user.requestsSent.includes(foundUser._id) &&
+          !user.requestsReceived.includes(foundUser._id) &&
+          user._id.toString() !== foundUser._id.toString()
       )
       .map(foundUser => {
         return {
