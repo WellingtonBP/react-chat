@@ -15,13 +15,7 @@ import { FriendWrapper, FriendHeader, FriendOptions } from './styles'
 const sortFriends = (a: FriendsSlice, b: FriendsSlice) => {
   if (a.isOnline && !b.isOnline) {
     return -1
-  } else if (a.isOnline && b.isOnline) {
-    if (a.unreadMessages && !b.unreadMessages) {
-      return -1
-    } else if (!a.unreadMessages && !b.unreadMessages) {
-      return 0
-    }
-  } else if (!a.isOnline && !b.isOnline) {
+  } else if ((a.isOnline && b.isOnline) || (!a.isOnline && !b.isOnline)) {
     if (a.unreadMessages && !b.unreadMessages) {
       return -1
     } else if (!a.unreadMessages && !b.unreadMessages) {
@@ -32,21 +26,35 @@ const sortFriends = (a: FriendsSlice, b: FriendsSlice) => {
 
 const Friends: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
-  const [showOptions, setShowOptions] = useState(false)
   const friends = useSelector((state: RootState) => state.friends.array)
+  const [showOptions, setShowOptions] = useState<boolean[]>(
+    new Array(friends.length)
+  )
   const token = useSelector((state: RootState) => state.auth.token)
+  const socket = useSelector((state: RootState) => state.user.socket)
 
-  const startChat = async (friendId: string) => {
+  const startChat = (friendId: string) => {
     dispatch(userActions.startChat({ id: friendId }))
     if (friends.find(friend => friend._id === friendId).unreadMessages > 0) {
       dispatch(friendsActions.setUnreadMessages({ id: friendId, reset: true }))
-      await setUnreadMessages(token, friendId, true)
+      setUnreadMessages(token, friendId, true)
+    }
+  }
+
+  const removeFriend = (friendId: string) => {
+    const confirmation = window.confirm(
+      'Are you sure you want to delete this friend?'
+    )
+    if (confirmation) {
+      dispatch(userActions.stopChat())
+      socket.emit('remove_friend', { id: friendId })
+      dispatch(friendsActions.removeFriend({ id: friendId }))
     }
   }
 
   return (
     <>
-      {[...friends].sort(sortFriends).map(friend => (
+      {[...friends].sort(sortFriends).map((friend, index) => (
         <FriendWrapper
           id={friend._id}
           className={friend.unreadMessages !== 0 ? 'new-message' : ''}
@@ -68,17 +76,30 @@ const Friends: React.FC = () => {
             <button
               type="button"
               aria-controls="options"
-              onClick={() => setShowOptions(prev => !prev)}
+              onClick={evt => {
+                evt.stopPropagation()
+                setShowOptions(prev => {
+                  const updateShowArray = [...prev]
+                  updateShowArray[index] = !updateShowArray[index]
+                  return updateShowArray
+                })
+              }}
             >
               <img src={dotsIcon} alt="Options" />
             </button>
-            {showOptions && (
+            {showOptions[index] && (
               <FriendOptions>
                 <button type="button">
                   <li>Clear Messages</li>
                 </button>
-                <button type="button">
-                  <li>Delete Friend</li>
+                <button
+                  type="button"
+                  onClick={evt => {
+                    evt.stopPropagation()
+                    removeFriend(friend._id)
+                  }}
+                >
+                  <li>Remove Friend</li>
                 </button>
               </FriendOptions>
             )}

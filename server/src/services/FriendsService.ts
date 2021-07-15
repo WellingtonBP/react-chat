@@ -110,14 +110,17 @@ class FriendsService {
   }
 
   async remove(user: IUser, removedUser: IUser): Promise<void> {
+    const chatId = user.friends.find(
+      friend => friend.friendId.toString() === removedUser._id.toString()
+    ).chatId
     user.friends = user.friends.filter(
       friend => friend.friendId.toString() !== removedUser._id.toString()
     )
-    removedUser.friends = removedUser.friends.map(friend => ({
-      ...friend,
-      isRemoved: !(friend.friendId.toString() === removedUser._id.toString())
-    }))
+    removedUser.friends = removedUser.friends.filter(
+      friend => friend.friendId.toString() !== user._id.toString()
+    )
 
+    await Chat.deleteOne({ _id: chatId })
     await user.save()
     await removedUser.save()
   }

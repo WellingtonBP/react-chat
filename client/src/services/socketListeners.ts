@@ -8,7 +8,6 @@ import store from '../store'
 
 export type AcceptedFriendSocket = {
   unreadMessages: number
-  isRemoved: boolean
   chatId: {
     messages: {
       sender: string
@@ -39,7 +38,6 @@ function socketListeners(socket: Socket, dispatch: Dispatch): void {
     (acceptedFriend: AcceptedFriendSocket) => {
       const parsedAcceptedFriend = {
         unreadMessages: acceptedFriend.unreadMessages,
-        isRemoved: acceptedFriend.isRemoved,
         chat: acceptedFriend.chatId,
         ...acceptedFriend.friendId
       }
@@ -59,8 +57,8 @@ function socketListeners(socket: Socket, dispatch: Dispatch): void {
     }
   })
 
-  socket.on('removed_friend', id => {
-    dispatch(friendsActions.removeFriend(id))
+  socket.on('removed_friend', ({ id }) => {
+    dispatch(friendsActions.removeFriend({ id }))
   })
 
   socket.on('friend_disconnect', id => {

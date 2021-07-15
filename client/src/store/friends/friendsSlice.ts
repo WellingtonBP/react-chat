@@ -7,7 +7,6 @@ export type FriendsSlice = {
   isOnline: boolean
   socketId: string
   unreadMessages: number
-  isRemoved: boolean
   chat: {
     messages: {
       content: string
@@ -60,7 +59,12 @@ type SetUnreadMessagesAction = {
   }
 }
 
-type DisconnectFriendAction = RemoveFriendAction
+type DisconnectFriendAction = {
+  type: string
+  payload: {
+    id: string
+  }
+}
 
 const initialState = {
   array: [] as FriendsSlice[]
@@ -109,12 +113,7 @@ const friends = createSlice({
       })
     },
     removeFriend(state, { payload }: RemoveFriendAction) {
-      state.array = state.array.map(friend => {
-        if (friend._id === payload.id) {
-          friend.isRemoved = true
-        }
-        return friend
-      })
+      state.array = state.array.filter(friend => friend._id !== payload.id)
     },
     friendDisconnected(state, { payload }: DisconnectFriendAction) {
       state.array = state.array.map(friend => {

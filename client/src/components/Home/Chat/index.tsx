@@ -62,7 +62,11 @@ const Chat: React.FC = () => {
               <img src={backArrowIcon} alt="Back" />
             </button>
             <div>
-              <img src={defaultAvatarIcon} alt="" id="avatar" />
+              <img
+                src={friend.avatar ?? defaultAvatarIcon}
+                alt=""
+                id="avatar"
+              />
               <span className={friend.isOnline ? 'online' : ''}>
                 {friend.name}
               </span>

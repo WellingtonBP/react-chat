@@ -1,4 +1,5 @@
 import { hash } from 'bcrypt'
+import { IsNumericOptions } from 'express-validator/src/options'
 
 import { IChat } from '../models/Chat'
 import User, { IUser } from '../models/User'
@@ -28,23 +29,21 @@ class UsersService {
         .populate('friends.chatId', '-_id')
         .execPopulate()
 
-      // filter "deleted" users and messages
-      populatedUser.friends = populatedUser.friends
-        .filter(friend => !friend.isRemoved)
-        .map(friend => {
-          if (friend.cleanedAt) {
-            return {
-              ...friend,
-              chatId: {
-                ...friend.chatId,
-                messages: (<IChat>friend.chatId).messages.filter(
-                  message => message.senderAt > friend.cleanedAt
-                )
-              }
-            } as typeof friend
-          }
-          return friend
-        })
+      // filter messages
+      populatedUser.friends = populatedUser.friends.map(friend => {
+        if (friend.cleanedAt) {
+          friend = {
+            ...friend,
+            chatId: {
+              ...friend.chatId,
+              messages: (<IChat>friend.chatId).messages.filter(
+                message => message.senderAt > friend.cleanedAt
+              )
+            }
+          } as typeof friend
+        }
+        return friend
+      })
 
       return populatedUser
     }

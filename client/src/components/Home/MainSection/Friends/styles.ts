@@ -63,6 +63,14 @@ const FriendHeader = styled.div`
     background-color: transparent;
     border: none;
     cursor: pointer;
+    padding-left: 1rem;
+  }
+
+  ul button {
+    padding: 0;
+    &:hover li {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
   }
 `
 

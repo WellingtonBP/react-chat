@@ -27,7 +27,6 @@ const FriendsRequests: React.FC = () => {
         (acceptedFriend: AcceptedFriendSocket) => {
           const parsedAcceptedFriend = {
             unreadMessages: acceptedFriend.unreadMessages,
-            isRemoved: acceptedFriend.isRemoved,
             chat: acceptedFriend.chatId,
             ...acceptedFriend.friendId
           }
