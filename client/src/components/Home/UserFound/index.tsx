@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react'
+import React from 'react'
 
 import defaultAvatarIcon from '../../../assets/images/defaultAvatarIcon.svg'
 import { UserFoundWrapper } from './styles'
@@ -7,14 +7,13 @@ type UserFoundProps = {
   avatar?: string
   name: string
   mutuals: number
-  actions: ReactNode
 }
 
 const UserFound: React.FC<UserFoundProps> = ({
   avatar = defaultAvatarIcon,
   name,
   mutuals,
-  actions
+  children
 }) => {
   return (
     <UserFoundWrapper>
@@ -23,7 +22,7 @@ const UserFound: React.FC<UserFoundProps> = ({
         <span>{name}</span>
         <p>{mutuals} mutual friends</p>
       </div>
-      {actions}
+      {children}
     </UserFoundWrapper>
   )
 }

@@ -44,24 +44,28 @@ type NewMessageAction = {
   }
 }
 
-type RemoveOrDisconnectFriendAction = {
+type RemoveFriendAction = {
   type: string
   payload: {
     id: string
   }
 }
 
-const initialState: FriendsSlice[] = []
+type DisconnectFriendAction = RemoveFriendAction
+
+const initialState = {
+  array: [] as FriendsSlice[]
+}
 
 const friends = createSlice({
   name: 'friends',
   initialState,
   reducers: {
     setFriends(state, { payload }: SetFriendAction) {
-      state = payload
+      state.array = payload
     },
     newFriendOnline(state, { payload }: NewFriendOnlineAction) {
-      state = state.map(friend => {
+      state.array = state.array.map(friend => {
         if (friend._id === payload.id) {
           friend.socketId = payload.socketId
         }
@@ -69,26 +73,27 @@ const friends = createSlice({
       })
     },
     newFriend(state, { payload }: NewFriendAction) {
-      state = [...state, payload]
+      state.array.push(payload)
+      console.log(payload)
     },
     newMessage(state, { payload }: NewMessageAction) {
-      state = state.map(friend => {
+      state.array = state.array.map(friend => {
         if (friend._id === payload.sender) {
           friend.chat.messages.push(payload)
         }
         return friend
       })
     },
-    removeFriend(state, { payload }: RemoveOrDisconnectFriendAction) {
-      state = state.map(friend => {
+    removeFriend(state, { payload }: RemoveFriendAction) {
+      state.array = state.array.map(friend => {
         if (friend._id === payload.id) {
           friend.isRemoved = true
         }
         return friend
       })
     },
-    friendDisconnected(state, { payload }: RemoveOrDisconnectFriendAction) {
-      state = state.map(friend => {
+    friendDisconnected(state, { payload }: DisconnectFriendAction) {
+      state.array = state.array.map(friend => {
         if (friend._id === payload.id) {
           friend.isOnline = false
           friend.socketId = ''

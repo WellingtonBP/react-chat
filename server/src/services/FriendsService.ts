@@ -104,7 +104,7 @@ class FriendsService {
 
     await chat.save()
     await user.save()
-    await user.save()
+    await acceptedUser.save()
 
     return { ...friendCfg, chatId: chat }
   }

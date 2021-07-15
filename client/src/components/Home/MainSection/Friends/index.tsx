@@ -8,7 +8,7 @@ import { FriendWrapper, FriendHeader, FriendOptions } from './styles'
 
 const Friends: React.FC = () => {
   const [showOptions, setShowOptions] = useState(false)
-  const friends = useSelector((state: RootState) => state.friends)
+  const friends = useSelector((state: RootState) => state.friends.array)
 
   return (
     <>
@@ -50,7 +50,7 @@ const Friends: React.FC = () => {
           <p>
             {friend.chat.messages[
               friend.chat.messages.length - 1
-            ].content.substring(0, 100)}
+            ]?.content.substring(0, 100) || 'No message yet.'}
           </p>
         </FriendWrapper>
       ))}

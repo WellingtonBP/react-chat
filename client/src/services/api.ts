@@ -1,13 +1,49 @@
-import SignAndLoginResponse from '../types/SignAndLoginResponse'
-import FindResponse from '../types/FindResponse'
-
 const api = process.env.REACT_APP_API_HOST
+
+export type FindResponse = {
+  id: string
+  name: string
+  avatar?: string
+  mutuals: number
+}
+
+export type SignResponse = {
+  name: string
+  avatar?: string
+  requestsReceived: {
+    userId: string
+    name: string
+    avatar?: string
+    mutuals: number
+  }[]
+  requestsSent: string[]
+  token: string
+  expiresIn: number
+  friends: {
+    _id: string
+    name: string
+    avatar?: string
+    isOnline: boolean
+    socketId: string
+    unreadMessages: number
+    isRemoved: boolean
+    chat: {
+      messages: {
+        content: string
+        sender: string
+        senderAt: number
+      }[]
+    }
+  }[]
+}
+
+export type LoginResponse = SignResponse
 
 async function sign(
   name: string,
   email: string,
   password: string
-): Promise<SignAndLoginResponse | never> {
+): Promise<SignResponse | never> {
   const response = await fetch(`${api}/users/signup`, {
     method: 'POST',
     headers: {
@@ -36,7 +72,7 @@ async function sign(
 async function login(
   email: string,
   password: string
-): Promise<SignAndLoginResponse | never> {
+): Promise<LoginResponse | never> {
   const response = await fetch(`${api}/users/login`, {
     method: 'POST',
     headers: {

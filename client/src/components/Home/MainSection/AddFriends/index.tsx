@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import { RootState } from '../../../../store'
-import { find } from '../../../../services/api'
-import FindResponse from '../../../../types/FindResponse'
+import { find, FindResponse } from '../../../../services/api'
 import searchIcon from '../../../../assets/images/searchIcon.svg'
 import UserFound from '../../UserFound'
 import ActionButton from '../../ActionButton'
@@ -25,7 +24,7 @@ const AddFriends: React.FC = () => {
     return () => clearTimeout(fetchTimeout)
   }, [search, token])
 
-  const addFriendHandler = async (id: string) => {
+  const addFriendHandler = (id: string) => {
     const confirmation = window.confirm(
       'Are you sure you want to add this user to your friends?'
     )
@@ -33,7 +32,6 @@ const AddFriends: React.FC = () => {
     if (confirmation) {
       socket.emit('send_friend_request', { id })
       setFoundUsers(prev => prev.filter(user => user.id !== id))
-      alert('Request Sent!')
     }
   }
 
@@ -50,19 +48,14 @@ const AddFriends: React.FC = () => {
         <img src={searchIcon} alt="" />
       </SearchForm>
       {foundUsers.map(user => (
-        <UserFound
-          name={user.name}
-          key={user.id}
-          mutuals={user.mutuals}
-          actions={
-            <ActionButton
-              background="var(--darkBlue)"
-              onClick={addFriendHandler.bind(null, user.id)}
-            >
-              Add
-            </ActionButton>
-          }
-        />
+        <UserFound name={user.name} key={user.id} mutuals={user.mutuals}>
+          <ActionButton
+            background="var(--darkBlue)"
+            onClick={addFriendHandler.bind(null, user.id)}
+          >
+            Add
+          </ActionButton>
+        </UserFound>
       ))}
       {foundUsers.length < 1 && <h1 id="info">No users found</h1>}
     </>

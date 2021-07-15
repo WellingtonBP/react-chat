@@ -4,10 +4,8 @@ import { io } from 'socket.io-client'
 import { actions as authActions } from './authSlice'
 import { actions as userActions } from '../user/userSlice'
 import { actions as friendsActions } from '../friends/friendsSlice'
-import { login, sign } from '../../services/api'
+import { login, sign, SignResponse, LoginResponse } from '../../services/api'
 import socketListeners from '../../services/socketListeners'
-
-import SignAndLoginResponse from '../../types/SignAndLoginResponse'
 
 function authAction(
   email: string,
@@ -18,13 +16,9 @@ function authAction(
     try {
       dispatch(authActions.startLogin())
 
-      const data: SignAndLoginResponse = await (name
+      const data: SignResponse | LoginResponse = await (name
         ? sign(name, email, password)
         : login(email, password))
-
-      dispatch(
-        authActions.login({ token: data.token, expiresIn: data.expiresIn })
-      )
 
       const socket = io(process.env.REACT_APP_API_HOST, {
         auth: {
@@ -35,6 +29,9 @@ function authAction(
       socketListeners(socket, dispatch)
 
       dispatch(
+        authActions.login({ token: data.token, expiresIn: data.expiresIn })
+      )
+      dispatch(
         userActions.setUser({
           name: data.name,
           avatar: data.avatar,
@@ -42,7 +39,6 @@ function authAction(
           socket
         })
       )
-
       dispatch(friendsActions.setFriends(data.friends))
     } catch (err) {
       dispatch(authActions.authError({ message: err.message }))

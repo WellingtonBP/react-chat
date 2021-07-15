@@ -10,17 +10,18 @@ const FriendsRequests: React.FC = () => {
   const friendsRequest = useSelector(
     (state: RootState) => state.user.requestsReceived
   )
+  const socket = useSelector((state: RootState) => state.user.socket)
 
-  const actions = (
-    <Actions>
-      <ActionButton type="button" background="var(--darkGreen)">
-        Accept
-      </ActionButton>
-      <ActionButton type="button" background="var(--red)">
-        Remove
-      </ActionButton>
-    </Actions>
-  )
+  const acceptFriendHandler = (id: string) => {
+    const confirmation = window.confirm(
+      'Are you sure you want to accept this friend?'
+    )
+    if (confirmation) {
+      socket.emit('accept_friend_request', { id })
+      alert('Friend accepted!')
+    }
+  }
+
   return (
     <>
       {friendsRequest.map(request => (
@@ -29,8 +30,20 @@ const FriendsRequests: React.FC = () => {
           key={request.userId}
           mutuals={request.mutuals}
           name={request.name}
-          actions={actions}
-        />
+        >
+          <Actions>
+            <ActionButton
+              type="button"
+              background="var(--darkGreen)"
+              onClick={acceptFriendHandler.bind(null, request.userId)}
+            >
+              Accept
+            </ActionButton>
+            <ActionButton type="button" background="var(--red)">
+              Remove
+            </ActionButton>
+          </Actions>
+        </UserFound>
       ))}
       {friendsRequest.length < 1 && (
         <h1 id="info">No friends requests found</h1>
