@@ -58,6 +58,7 @@ function socketListeners(socket: Socket, dispatch: Dispatch): void {
   })
 
   socket.on('removed_friend', ({ id }) => {
+    dispatch(userActions.stopChat())
     dispatch(friendsActions.removeFriend({ id }))
   })
 
