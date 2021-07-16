@@ -22,6 +22,7 @@ const sortFriends = (a: FriendsSlice, b: FriendsSlice) => {
       return 0
     }
   }
+  return 1
 }
 
 const Friends: React.FC = () => {
