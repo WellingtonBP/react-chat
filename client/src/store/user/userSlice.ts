@@ -63,9 +63,9 @@ const user = createSlice({
     setUser(state, { payload }: SetUserAction) {
       state.id = payload.id
       state.name = payload.name
-      state.avatar = `${apiDomain}/${payload.avatar}`
       state.requestsReceived = payload.requestsReceived
       state.socket = payload.socket
+      state.avatar = payload.avatar
     },
     resetUser(state) {
       state.socket.close()
@@ -91,7 +91,7 @@ const user = createSlice({
       )
     },
     setAvatar(state, { payload }: SetAvatarAction) {
-      state.avatar = `${apiDomain}/${payload.avatar}`
+      state.avatar = payload.avatar
     }
   }
 })

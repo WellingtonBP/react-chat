@@ -15,6 +15,8 @@ import {
   SendMessageForm
 } from './styles'
 
+const apiHost = process.env.REACT_APP_API_HOST
+
 const Chat: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
   const {
@@ -63,7 +65,11 @@ const Chat: React.FC = () => {
             </button>
             <div>
               <img
-                src={friend.avatar ?? defaultAvatarIcon}
+                src={
+                  friend.avatar
+                    ? `${apiHost}/${friend.avatar}`
+                    : defaultAvatarIcon
+                }
                 alt=""
                 id="avatar"
               />

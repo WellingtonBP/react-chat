@@ -12,6 +12,8 @@ import defaultAvatarIcon from '../../../../assets/images/defaultAvatarIcon.svg'
 import dotsIcon from '../../../../assets/images/dotsIcon.svg'
 import { FriendWrapper, FriendHeader, FriendOptions } from './styles'
 
+const apiHost = process.env.REACT_APP_API_HOST
+
 const sortFriends = (a: FriendsSlice, b: FriendsSlice) => {
   if (a.isOnline && !b.isOnline) {
     return -1
@@ -72,7 +74,11 @@ const Friends: React.FC = () => {
           <FriendHeader>
             <div>
               <img
-                src={friend.avatar ?? defaultAvatarIcon}
+                src={
+                  friend.avatar
+                    ? `${apiHost}/${friend.avatar}`
+                    : defaultAvatarIcon
+                }
                 alt=""
                 className="friend-avatar"
               />

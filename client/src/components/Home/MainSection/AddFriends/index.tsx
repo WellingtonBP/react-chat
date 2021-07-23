@@ -48,7 +48,12 @@ const AddFriends: React.FC = () => {
         <img src={searchIcon} alt="" />
       </SearchForm>
       {foundUsers.map(user => (
-        <UserFound name={user.name} key={user.id} mutuals={user.mutuals}>
+        <UserFound
+          name={user.name}
+          key={user.id}
+          mutuals={user.mutuals}
+          avatar={user.avatar}
+        >
           <ActionButton
             background="var(--darkBlue)"
             onClick={addFriendHandler.bind(null, user.id)}

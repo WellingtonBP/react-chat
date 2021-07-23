@@ -24,6 +24,8 @@ const AddFriends = lazy(() => import('./AddFriends'))
 const FriendsRequests = lazy(() => import('./FriendsRequests'))
 const Friends = lazy(() => import('./Friends'))
 
+const apiHost = process.env.REACT_APP_API_HOST
+
 const MainSection: React.FC = () => {
   const [openAvatarModal, setOpenAvatarModal] = useState(false)
   const user = useSelector((state: RootState) => state.user)
@@ -39,20 +41,24 @@ const MainSection: React.FC = () => {
 
   return (
     <>
-      {!user.avatar ||
-        (openAvatarModal && (
-          <UploadAvatarModal
-            aria-hidden="true"
-            onClose={setOpenAvatarModal.bind(null, false)}
-          />
-        ))}
+      {(!user.avatar || openAvatarModal) && (
+        <UploadAvatarModal
+          aria-hidden="true"
+          onClose={setOpenAvatarModal.bind(null, false)}
+        />
+      )}
       <MainSectionContainer className={!!user.chattingWith ? 'chatting' : ''}>
         <Header>
           <button
             id="profile-button"
             onClick={setOpenAvatarModal.bind(null, true)}
           >
-            <img src={user.avatar ?? defaultAvatarIcon} alt="avatar" />
+            <img
+              src={
+                user.avatar ? `${apiHost}/${user.avatar}` : defaultAvatarIcon
+              }
+              alt="avatar"
+            />
             {user.name}
           </button>
           <button
