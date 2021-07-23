@@ -38,7 +38,7 @@ const Login: React.FC = () => {
     changeInputHandler
   } = useForm(loginForm)
 
-  const { email, password, valid: formIsValid } = formState
+  const { email, valid: formIsValid, password } = formState
 
   const handlelogin = (evt: FormEvent) => {
     evt.preventDefault()
