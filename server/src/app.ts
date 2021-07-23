@@ -1,5 +1,6 @@
 import express from 'express'
 import { createServer } from 'http'
+import path from 'path'
 import { Server } from 'socket.io'
 import { connect } from 'mongoose'
 import cors from 'cors'
@@ -15,6 +16,8 @@ const io = new Server(httpServer, { cors: { origin: '*' } })
 app.use(express.json())
 app.use(cors())
 app.use(routes)
+
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')))
 
 app.use((req, res, next) => {
   const err: ICustomError = new Error()

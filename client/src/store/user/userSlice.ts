@@ -1,5 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
+const apiDomain = process.env.REACT_APP_API_HOST
+
 type UserSlice = {
   id: string
   name: string
@@ -36,6 +38,13 @@ type StartChatAction = {
   }
 }
 
+type SetAvatarAction = {
+  type: string
+  payload: {
+    avatar: string
+  }
+}
+
 type AcceptFriendAction = StartChatAction
 
 const initialState: UserSlice = {
@@ -54,7 +63,7 @@ const user = createSlice({
     setUser(state, { payload }: SetUserAction) {
       state.id = payload.id
       state.name = payload.name
-      state.avatar = payload.avatar
+      state.avatar = `${apiDomain}/${payload.avatar}`
       state.requestsReceived = payload.requestsReceived
       state.socket = payload.socket
     },
@@ -80,6 +89,9 @@ const user = createSlice({
       state.requestsReceived = state.requestsReceived.filter(
         request => request.userId !== payload.id
       )
+    },
+    setAvatar(state, { payload }: SetAvatarAction) {
+      state.avatar = `${apiDomain}/${payload.avatar}`
     }
   }
 })

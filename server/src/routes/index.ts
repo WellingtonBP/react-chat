@@ -1,5 +1,7 @@
 import { Router } from 'express'
+import multer from 'multer'
 
+import multerConfig from '../utils/multerConfig'
 import UsersController from '../controllers/UsersController'
 
 import signupValidators from '../middlewares/signupValidators'
@@ -11,6 +13,7 @@ import validationCheckResult from '../middlewares/validationCheckResult'
 import isAuth from '../middlewares/isAuth'
 
 const route = Router()
+const upload = multer(multerConfig)
 const usersController = new UsersController()
 
 route.post(
@@ -25,6 +28,14 @@ route.post(
   loginValidators,
   validationCheckResult,
   usersController.login
+)
+
+route.post(
+  '/users/change-avatar',
+  isAuth,
+  validationCheckResult,
+  upload.single('avatar'),
+  usersController.uploadAvatar
 )
 
 route.get(

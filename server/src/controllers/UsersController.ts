@@ -134,6 +134,28 @@ class UsersController {
       next(err)
     }
   }
+
+  async uploadAvatar(
+    req: IAuthenticatedReq,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { file } = req
+      const id = req.userId
+      const user = await User.findById(id)
+      const usersService = new UsersService()
+
+      const newAvatar = await usersService.uploadAvatar(user, file)
+
+      res.status(201).json({
+        message: 'sucess',
+        avatar: newAvatar
+      })
+    } catch (err) {
+      next(err)
+    }
+  }
 }
 
 export default UsersController

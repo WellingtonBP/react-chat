@@ -29,6 +29,7 @@ const Header = styled.header`
   height: 7rem;
   padding: 0 1.5rem;
   #profile-button {
+    cursor: pointer;
     background-color: transparent;
     border: none;
     display: flex;

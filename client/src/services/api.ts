@@ -160,4 +160,23 @@ async function clearChat(
   if (!response.ok) throw new Error('Something went wrong')
 }
 
-export { sign, login, find, setUnreadMessages, clearChat }
+async function uploadAvatar(
+  token: string,
+  data: FormData
+): Promise<string | never> {
+  const response = await fetch(`${api}/users/change-avatar`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    body: data
+  })
+
+  if (!response.ok) throw new Error('Something went wrong')
+
+  const { avatar } = await response.json()
+
+  return avatar
+}
+
+export { sign, login, find, setUnreadMessages, clearChat, uploadAvatar }

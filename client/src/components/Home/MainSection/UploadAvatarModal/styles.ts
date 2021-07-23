@@ -29,11 +29,12 @@ const Overlay = styled.section`
     img {
       width: 3rem;
     }
-    float: right;
+    display: block;
+    margin-left: auto;
   }
 
   h1 {
-    margin-top: 3rem;
+    margin-top: 2rem;
     text-align: center;
     font-size: 2rem;
     font-weight: normal;
@@ -56,6 +57,20 @@ const Overlay = styled.section`
     border-radius: 0.5rem;
     width: 100%;
     max-width: 30rem;
+  }
+
+  #upload {
+    display: block;
+    margin: 2rem auto 0;
+    background-color: var(--darkGrayishBlue);
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    transition: 200ms;
+    &:hover {
+      color: white;
+      background-color: var(--darkBlue);
+    }
   }
 `
 

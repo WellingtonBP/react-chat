@@ -1,8 +1,16 @@
 import { hash } from 'bcrypt'
-import { IsNumericOptions } from 'express-validator/src/options'
+import fs from 'fs/promises'
+import path from 'path'
 
 import { IChat } from '../models/Chat'
 import User, { IUser } from '../models/User'
+import ICustomError from '../utils/ICustomError'
+
+function clearImage(filePath: string) {
+  filePath = path.join(__dirname, '..', '..', filePath)
+  console.log(filePath)
+  fs.unlink(filePath)
+}
 
 class UsersService {
   async create(name: string, email: string, password: string): Promise<IUser> {
@@ -42,6 +50,24 @@ class UsersService {
     }
 
     return user
+  }
+
+  async uploadAvatar(
+    user: IUser,
+    file: Express.Multer.File
+  ): Promise<string | never> {
+    if (!file) {
+      const error: ICustomError = new Error()
+      error.statusCode = 422
+      error.originalMessage = 'Invalid file'
+      throw error
+    }
+    const currentAvatar = user.avatar
+    const newAvatar = file.path.replace('\\', '/')
+    user.avatar = newAvatar
+    await user.save()
+    if (currentAvatar) clearImage(currentAvatar)
+    return newAvatar
   }
 }
 

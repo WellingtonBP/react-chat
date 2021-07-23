@@ -25,7 +25,7 @@ const FriendsRequests = lazy(() => import('./FriendsRequests'))
 const Friends = lazy(() => import('./Friends'))
 
 const MainSection: React.FC = () => {
-  const [openAvatarModal, setOpenAvatarModal] = useState(true)
+  const [openAvatarModal, setOpenAvatarModal] = useState(false)
   const user = useSelector((state: RootState) => state.user)
   const friends = useSelector((state: RootState) => state.friends.array)
   const dispatch = useDispatch<AppDispatch>()
@@ -39,12 +39,13 @@ const MainSection: React.FC = () => {
 
   return (
     <>
-      {!user.avatar && openAvatarModal && (
-        <UploadAvatarModal
-          aria-hidden="true"
-          onClose={setOpenAvatarModal.bind(null, false)}
-        />
-      )}
+      {!user.avatar ||
+        (openAvatarModal && (
+          <UploadAvatarModal
+            aria-hidden="true"
+            onClose={setOpenAvatarModal.bind(null, false)}
+          />
+        ))}
       <MainSectionContainer className={!!user.chattingWith ? 'chatting' : ''}>
         <Header>
           <button
