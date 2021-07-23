@@ -7,44 +7,16 @@ export type FindResponse = {
   mutuals: number
 }
 
-export type SignResponse = {
-  id: string
-  name: string
-  avatar?: string
-  requestsReceived: {
-    userId: string
-    name: string
-    avatar?: string
-    mutuals: number
-  }[]
-  requestsSent: string[]
+export type Token = {
   token: string
   expiresIn: number
-  friends: {
-    _id: string
-    name: string
-    avatar?: string
-    isOnline: boolean
-    socketId: string
-    unreadMessages: number
-    isRemoved: boolean
-    chat: {
-      messages: {
-        content: string
-        sender: string
-        senderAt: number
-      }[]
-    }
-  }[]
 }
-
-export type LoginResponse = SignResponse
 
 async function sign(
   name: string,
   email: string,
   password: string
-): Promise<SignResponse | never> {
+): Promise<Token | never> {
   const response = await fetch(`${api}/users/signup`, {
     method: 'POST',
     headers: {
@@ -60,20 +32,10 @@ async function sign(
     throw new Error(errMessage)
   }
 
-  data.friends = data.friends.map(friend => ({
-    ...friend.friendId,
-    unreadMessages: friend.unreadMessages,
-    isRemoved: friend.isRemoved,
-    chat: { ...friend.chatId }
-  }))
-
   return data
 }
 
-async function login(
-  email: string,
-  password: string
-): Promise<LoginResponse | never> {
+async function login(email: string, password: string): Promise<Token | never> {
   const response = await fetch(`${api}/users/login`, {
     method: 'POST',
     headers: {
@@ -88,13 +50,6 @@ async function login(
     const errMessage = data.error || 'Something went wrong!'
     throw new Error(errMessage)
   }
-
-  data.friends = data.friends.map(friend => ({
-    ...friend.friendId,
-    unreadMessages: friend.unreadMessages,
-    isRemoved: friend.isRemoved,
-    chat: { ...friend.chatId }
-  }))
 
   return data
 }

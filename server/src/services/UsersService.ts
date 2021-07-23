@@ -13,11 +13,11 @@ function clearImage(filePath: string) {
 }
 
 class UsersService {
-  async create(name: string, email: string, password: string): Promise<IUser> {
+  async create(name: string, email: string, password: string): Promise<string> {
     const hashedPassword = await hash(password, 8)
     const user = new User({ name, email, password: hashedPassword })
     await user.save()
-    return user
+    return user._id
   }
 
   async changeStatusAndSocketId(

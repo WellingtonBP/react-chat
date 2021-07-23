@@ -18,13 +18,22 @@ io.use(async (socket, next) => {
     const usersService = new UsersService()
     await usersService.changeStatusAndSocketId(user, true, socket.id)
 
-    const userFriends = (await usersService.populateUser(user)).friends
-    userFriends
+    const { name, avatar, friends, requestsSent, requestsReceived } =
+      await usersService.populateUser(user)
+    friends
       .filter(({ friendId }) => (<IUser>friendId).isOnline)
       .forEach(({ friendId }) => {
         const socketId = (<IUser>friendId).socketId
         io.to(socketId).emit('new_friend_online', { id, socket: socket.id })
       })
+    socket.emit('user_data', {
+      id,
+      name,
+      avatar,
+      friends,
+      requestsSent,
+      requestsReceived
+    })
 
     next()
   } catch (err) {

@@ -14,20 +14,13 @@ class UsersController {
       const { name, email, password } = req.body
       const usersService = new UsersService()
 
-      const { requestsReceived, requestsSent, friends, _id, avatar } =
-        await usersService.create(name, email, password)
+      const id = (await usersService.create(name, email, password)).toString()
 
-      const token = sign({ id: _id.toString() }, process.env.JWT_SECRET!, {
+      const token = sign({ id }, process.env.JWT_SECRET!, {
         expiresIn: '1h'
       })
 
       res.status(201).json({
-        id: _id,
-        name,
-        avatar,
-        friends,
-        requestsReceived,
-        requestsSent,
         token,
         expiresIn: Date.now() + 3600000
       })
@@ -39,7 +32,6 @@ class UsersController {
   async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { email, password } = req.body
-      const usersService = new UsersService()
 
       const user = await User.findOne({ email })
       if (!user) {
@@ -57,20 +49,11 @@ class UsersController {
         throw err
       }
 
-      const { requestsReceived, requestsSent, friends, _id, avatar, name } =
-        await usersService.populateUser(user)
-
-      const token = sign({ id: _id.toString() }, process.env.JWT_SECRET!, {
+      const token = sign({ id: user._id.toString() }, process.env.JWT_SECRET!, {
         expiresIn: '1h'
       })
 
       res.status(200).json({
-        id: _id,
-        name,
-        avatar,
-        friends,
-        requestsSent,
-        requestsReceived,
         token,
         expiresIn: Date.now() + 3600000
       })

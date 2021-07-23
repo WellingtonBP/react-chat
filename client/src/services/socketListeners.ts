@@ -24,7 +24,60 @@ export type AcceptedFriendSocket = {
   }
 }
 
+type UserData = {
+  id: string
+  name: string
+  avatar?: string
+  requestsReceived: {
+    userId: string
+    name: string
+    avatar?: string
+    mutuals: number
+  }[]
+  requestsSent: string[]
+  friends: {
+    friendId: {
+      _id: string
+      name: string
+      avatar?: string
+      isOnline: boolean
+      socketId: string
+    }
+    unreadMessages: number
+    isRemoved: boolean
+    chatId: {
+      messages: {
+        content: string
+        sender: string
+        senderAt: number
+      }[]
+    }
+  }[]
+}
+
 function socketListeners(socket: Socket, dispatch: Dispatch): void {
+  socket.on('user_data', (data: UserData) => {
+    dispatch(
+      userActions.setUser({
+        id: data.id,
+        name: data.name,
+        avatar: data.avatar,
+        requestsReceived: data.requestsReceived,
+        socket
+      })
+    )
+    dispatch(
+      friendsActions.setFriends(
+        data.friends.map(friend => ({
+          ...friend.friendId,
+          unreadMessages: friend.unreadMessages,
+          isRemoved: friend.isRemoved,
+          chat: { ...friend.chatId }
+        }))
+      )
+    )
+  })
+
   socket.on('new_friend_online', ({ id, socket }) => {
     dispatch(friendsActions.newFriendOnline({ id, socketId: socket }))
   })
